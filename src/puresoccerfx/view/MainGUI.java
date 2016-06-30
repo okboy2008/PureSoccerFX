@@ -19,6 +19,7 @@ public class MainGUI extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
+        stage.setTitle(config.VersionInfo.NAME+" "+config.VersionInfo.VERSION);
         Parent root = FXMLLoader.load(getClass().getResource("MainGUIFXML.fxml"));
         
         Scene scene = new Scene(root);

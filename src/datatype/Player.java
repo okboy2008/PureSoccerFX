@@ -17,6 +17,11 @@ public class Player {
     private String age;
     private ArrayList<ShotEvent> shotEvents;
     
+    @Override
+    public String toString(){
+        return this.name;
+    }
+    
     public Player(String n){
         this.name = n;
         shotEvents = new ArrayList<>();

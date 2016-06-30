@@ -15,6 +15,11 @@ public class Team {
     private String name;
     private ArrayList<Player> players;
     
+    @Override
+    public String toString(){
+        return this.name;
+    }
+    
     public Team(String name){
         this.name = name;
         players = new ArrayList<>();

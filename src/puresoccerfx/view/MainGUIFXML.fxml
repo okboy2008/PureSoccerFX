@@ -15,7 +15,7 @@
               <menus>
                 <Menu mnemonicParsing="false" text="File">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="Open" />
+                    <MenuItem mnemonicParsing="false" onAction="#openFile" text="Open" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
@@ -42,7 +42,7 @@
                               <content>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                        <children>
-                                          <TreeView fx:id="PlayerTreeView" prefHeight="303.0" prefWidth="160.0" showRoot="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                          <TreeView fx:id="PlayerTreeView" prefHeight="303.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                        </children>
                                     </AnchorPane>
                               </content>
@@ -53,12 +53,12 @@
                                        <children>
                                           <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
-                                                <TextField promptText="Search Player Name">
+                                                <TextField fx:id="SearchTextField" promptText="Search Player Name">
                                                    <VBox.margin>
                                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                                    </VBox.margin>
                                                 </TextField>
-                                                <TableView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                                <TableView fx:id="PlayerSearchTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                                                   <columns>
                                                     <TableColumn prefWidth="75.0" text="C1" />
                                                     <TableColumn prefWidth="75.0" text="C2" />
@@ -95,7 +95,7 @@
             </SplitPane>
          </left>
          <bottom>
-            <Label alignment="CENTER" text="Status bar" textAlignment="RIGHT" BorderPane.alignment="CENTER_RIGHT">
+            <Label fx:id="StatusBarLabel" alignment="CENTER" text="Status bar" textAlignment="RIGHT" BorderPane.alignment="CENTER_RIGHT">
                <BorderPane.margin>
                   <Insets right="10.0" />
                </BorderPane.margin>
