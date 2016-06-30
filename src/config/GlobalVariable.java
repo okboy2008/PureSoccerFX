@@ -5,7 +5,7 @@
  */
 package config;
 
-import puresoccerfx.model.Team;
+import datatype.Team;
 import java.util.ArrayList;
 
 /**
