@@ -67,11 +67,19 @@ public class MainGUIFXMLController implements Initializable {
     private void initPlayerSearchTable(){
         TableColumn<PlayerItem, String> team_column = new TableColumn<>("Team");
         team_column.setCellValueFactory(new PropertyValueFactory<>("team_name"));
+        team_column.setMinWidth(120);
         TableColumn<PlayerItem, String> player_column = new TableColumn<>("Player");
         player_column.setCellValueFactory(new PropertyValueFactory<>("player_name"));
+        player_column.setMinWidth(150);
         this.PlayerSearchTable.getColumns().clear();
         this.PlayerSearchTable.getColumns().addAll(team_column, player_column);
         this.PlayerSearchTable.setItems(table_list);
+        this.PlayerSearchTable.getSelectionModel().selectedItemProperty()
+                .addListener((v, oldValue, newValue) ->{
+                    if(newValue!=null){
+                        System.out.println(newValue.getTeamName()+", "+newValue.getPlayerName());
+                    }
+                });
     }
     
     public void searchPlayer(){
@@ -94,13 +102,29 @@ public class MainGUIFXMLController implements Initializable {
     }
     
     private boolean isMatch(String s1, String s2){
-        if(s1.toUpperCase().contains(s2.toUpperCase()))
-            return true;
-        return false;
+        String ss1[] = s1.split(" ");
+        String ss2[] = s2.split(" ");
+        boolean flag = true;
+        if (ss1.length < ss2.length) {
+            return false;
+        }
+
+        for (int i = 0; i < ss2.length; i++) {
+            
+            if (!ss1[i].toUpperCase().startsWith(ss2[i].toUpperCase())) {
+                flag = false;
+                break;
+            }
+        }
+        if(!flag && ss1.length!=ss2.length){
+            flag = isMatch(s1.substring(ss1[0].length()+1),s2);
+        }
+        
+        return flag;
     }
     
     private void updateSearchResultTable(PlayerItem item){
-        System.out.println(item.toString());
+        //System.out.println(item.toString());
         table_list.add(item);
     }
     
