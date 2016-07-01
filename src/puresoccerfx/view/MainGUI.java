@@ -6,6 +6,7 @@
 package puresoccerfx.view;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -26,7 +27,11 @@ public class MainGUI extends Application {
         Scene scene = new Scene(root);
         
         stage.setScene(scene);
+        stage.setOnCloseRequest(e -> {
+            Platform.exit();
+        });
         stage.show();
+        
     }
 
     /**

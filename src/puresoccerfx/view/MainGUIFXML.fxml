@@ -27,14 +27,14 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="About" />
+                    <MenuItem mnemonicParsing="false" onAction="#openAboutGUI" text="About" />
                   </items>
                 </Menu>
               </menus>
             </MenuBar>
          </top>
          <left>
-            <SplitPane dividerPositions="0.619533527696793" orientation="VERTICAL" prefHeight="688.0" prefWidth="265.0" BorderPane.alignment="CENTER">
+            <SplitPane fx:id="leftSplitPane" dividerPositions="0.619533527696793" orientation="VERTICAL" prefHeight="688.0" prefWidth="265.0" BorderPane.alignment="CENTER">
               <items>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                      <children>
@@ -104,9 +104,17 @@
             </Label>
          </bottom>
          <center>
-            <SplitPane dividerPositions="0.3078078078078078" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
+            <SplitPane fx:id="middleSplitPane" dividerPositions="0.3078078078078078" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
               <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                     <children>
+                        <TableView layoutX="40.0" layoutY="1.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columns>
+                            <TableColumn prefWidth="75.0" text="C1" />
+                            <TableColumn prefWidth="75.0" text="C2" />
+                          </columns>
+                        </TableView>
+                     </children></AnchorPane>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                      <children>
                         <GridPane gridLinesVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -169,7 +177,7 @@
             </SplitPane>
          </center>
          <right>
-            <SplitPane dividerPositions="0.7462462462462462" orientation="VERTICAL" prefHeight="668.0" prefWidth="382.0" BorderPane.alignment="CENTER">
+            <SplitPane fx:id="rightSplitPane" dividerPositions="0.7462462462462462" orientation="VERTICAL" prefHeight="668.0" prefWidth="382.0" BorderPane.alignment="CENTER">
               <items>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="493.0" prefWidth="380.0" />
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />

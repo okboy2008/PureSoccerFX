@@ -10,13 +10,20 @@ import puresoccerfx.model.PlayerItem;
 import datatype.Team;
 import functions.LoadCSVdata;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -24,6 +31,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 
 /**
@@ -41,6 +49,12 @@ public class MainGUIFXMLController implements Initializable {
     private Label StatusBarLabel;
     @FXML
     private TextField SearchTextField;
+    @FXML
+    private SplitPane leftSplitPane;
+    @FXML
+    private SplitPane middleSplitPane;
+    @FXML
+    private SplitPane rightSplitPane;
     
     // SearchTable observableList
     private ObservableList<PlayerItem> table_list = FXCollections.observableArrayList();
@@ -51,6 +65,7 @@ public class MainGUIFXMLController implements Initializable {
         this.initStatusBar();
         this.initSearchTextField();
         this.initPlayerSearchTable();
+        this.disableStage();
     }
 
     private void initStatusBar(){
@@ -128,11 +143,42 @@ public class MainGUIFXMLController implements Initializable {
         table_list.add(item);
     }
     
+    public void disableStage(){
+        this.leftSplitPane.setDisable(true);
+        this.middleSplitPane.setDisable(true);
+        this.rightSplitPane.setDisable(true);
+    }
+    
+    public void enableStage(){
+        this.leftSplitPane.setDisable(false);
+        this.middleSplitPane.setDisable(false);
+        this.rightSplitPane.setDisable(false);
+    }
+    
+    public void openAboutGUI(){
+        
+        try {
+            Parent root;
+            System.out.println(getClass().getResource("/puresoccerfx/view/AboutGUIFXML.fxml"));
+            
+            root = FXMLLoader.load(getClass().getResource("/puresoccerfx/view/AboutGUIFXML.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("About " + config.VersionInfo.NAME);
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception ex) {
+            Logger.getLogger(MainGUIFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
+
+    }
+    
     public void openFile(){
         File file = getSelectedFile();
         if(file!=null){
             this.setStatusBarLabel("Loading " + file.getName() + " ...");
             loadDataFromFile(file);
+            this.enableStage();
             this.setStatusBarLabel(file.getName() + " loaded");
             // System.out.println(config.GlobalVariable.TEAMS.size());
             this.updatePlayerTreeView();
