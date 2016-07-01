@@ -136,6 +136,7 @@ public class MainGUIFXMLController implements Initializable {
             this.setStatusBarLabel(file.getName() + " loaded");
             // System.out.println(config.GlobalVariable.TEAMS.size());
             this.updatePlayerTreeView();
+            this.searchPlayer();
         }
     }
 
