@@ -10,6 +10,13 @@ package config;
  * @author s145633
  */
 public class DataSetConfig {
+    // Statistics
+    public static final int S_NAME = 0;
+    public static final int S_CATEGORY = 1;
+    public static final int S_ATTRIBUTE = 2;
+    public static final int S_DEFINITION = 3;
+    public static final int S_CUSTOMIZED = 4;
+    
     // Features
     public static final int TIME = 0;
     public static final int HALF = 1;

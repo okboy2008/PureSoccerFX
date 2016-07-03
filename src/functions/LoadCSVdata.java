@@ -209,5 +209,21 @@ public class LoadCSVdata {
         }
         return teams;
     }
+
+    public CSVParser getParser() {
+        return parser;
+    }
+
+    public void setParser(CSVParser parser) {
+        this.parser = parser;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
 }
 

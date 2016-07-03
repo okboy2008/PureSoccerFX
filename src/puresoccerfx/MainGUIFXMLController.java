@@ -9,6 +9,7 @@ import datatype.Player;
 import puresoccerfx.model.PlayerItem;
 import datatype.Team;
 import functions.LoadCSVdata;
+import functions.LoadSettings;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -23,6 +24,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -32,6 +35,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import puresoccerfx.model.PlayerStatistic;
 
 
 /**
@@ -55,6 +59,10 @@ public class MainGUIFXMLController implements Initializable {
     private SplitPane middleSplitPane;
     @FXML
     private SplitPane rightSplitPane;
+    @FXML 
+    private Menu statisticsMenu;
+    @FXML
+    private Menu customizedAttributeMenu;
     
     // SearchTable observableList
     private ObservableList<PlayerItem> table_list = FXCollections.observableArrayList();
@@ -62,12 +70,65 @@ public class MainGUIFXMLController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+        this.loadingProjectData();
         this.initStatusBar();
         this.initSearchTextField();
         this.initPlayerSearchTable();
+        this.initMenus();
         this.disableStage();
     }
 
+    private void loadingProjectData(){
+        LoadSettings loader = new LoadSettings();
+        File file = new File(config.ProjectSetting.CATEGORYFILEPATH);
+        System.out.println(file.canRead());
+        loader.setFile(file);
+        // System.out.println(loader.getFile().getAbsoluteFile());
+        config.GlobalVariable.CATEGORY = loader.readList();
+        file = new File(config.ProjectSetting.ATTRIBUTEFILEPATH);
+        loader.setFile(file);
+        config.GlobalVariable.ATTRIBUTE = loader.readList();
+        file = new File(config.ProjectSetting.DEFINITIONFILEPATH);
+        loader.setFile(file);
+        config.GlobalVariable.DEFINITION = loader.readList();
+        file = new File(config.ProjectSetting.STATISTICFILEPATH);
+        loader.setFile(file);
+        config.GlobalVariable.MAPNAMETOSTATS = loader.readStatisticList();
+        System.out.println(config.GlobalVariable.MAPNAMETOSTATS.size());
+    }
+    
+    private void initMenus(){
+        this.initSettingsMenu();
+    }
+    
+    private void initSettingsMenu(){
+        this.initStatisticsMenu();
+    }
+    
+    private void initStatisticsMenu(){
+        System.out.println(config.GlobalVariable.MAPNAMETOSTATS.values().size());
+        for(PlayerStatistic ps:config.GlobalVariable.MAPNAMETOSTATS.values()){
+            System.out.println(ps.getName());
+            if(ps.isCustomized()){
+                MenuItem item = new MenuItem(ps.getName());
+                item.setOnAction(e -> {
+                    config.GlobalVariable.SELECTEDPLAYERATTRIBUTE = item.getText();
+                    this.openPlayerAttributeGUI();
+                });
+                this.customizedAttributeMenu.getItems().add(this.customizedAttributeMenu.getItems().size()-2, item);
+            }else{
+                MenuItem item = new MenuItem(ps.getName());
+                item.setOnAction(e -> {
+                    config.GlobalVariable.SELECTEDPLAYERATTRIBUTE = item.getText();
+                    this.openPlayerAttributeGUI();
+                });
+                System.out.println("smenu size: "+ this.statisticsMenu.getItems().size());
+                this.statisticsMenu.getItems().add(this.statisticsMenu.getItems().size()-2, item);
+            }
+        }
+    }
+    
+    
     private void initStatusBar(){
         this.setStatusBarLabel("Ready");
     }
@@ -78,6 +139,7 @@ public class MainGUIFXMLController implements Initializable {
                     this.searchPlayer();
                 });
     }
+    
     
     private void initPlayerSearchTable(){
         TableColumn<PlayerItem, String> team_column = new TableColumn<>("Team");
@@ -173,6 +235,29 @@ public class MainGUIFXMLController implements Initializable {
 
     }
     
+    public void openNewStatisticGUI(){
+        config.GlobalVariable.SELECTEDPLAYERATTRIBUTE = null;
+        this.openPlayerAttributeGUI();
+    }
+    
+    public void openPlayerAttributeGUI(){
+        
+        try {
+            Parent root;
+            System.out.println(getClass().getResource("/puresoccerfx/view/PlayerAttributeGUIFXML.fxml"));
+            
+            root = FXMLLoader.load(getClass().getResource("/puresoccerfx/view/PlayerAttributeGUIFXML.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("Statitics Settings");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception ex) {
+            Logger.getLogger(MainGUIFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
+
+    }
+    
     public void openFile(){
         File file = getSelectedFile();
         if(file!=null){
@@ -236,6 +321,10 @@ public class MainGUIFXMLController implements Initializable {
                         System.out.println(newValue.getValue().toString());
                     }
                 });
+    }
+    
+    public void saveSettings(){
+        
     }
     
 }

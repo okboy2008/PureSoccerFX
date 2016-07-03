@@ -20,9 +20,21 @@
                     <MenuItem mnemonicParsing="false" onAction="#openFile" text="Open" />
                   </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
+                <Menu mnemonicParsing="false" text="Settings">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="Delete" />
+                        <Menu fx:id="statisticsMenu" mnemonicParsing="false" text="Statistics">
+                          <items>
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <Menu fx:id="customizedAttributeMenu" mnemonicParsing="false" text="Customized">
+                                <items>
+                                    <SeparatorMenuItem mnemonicParsing="false" />
+                                  <MenuItem mnemonicParsing="false" onAction="#openNewStatisticGUI" text="New" />
+                                </items>
+                              </Menu>
+                          </items>
+                        </Menu>
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="saveSettings" mnemonicParsing="false" onAction="#saveSettings" text="Save Settings" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">

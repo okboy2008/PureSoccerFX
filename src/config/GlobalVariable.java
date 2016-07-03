@@ -7,6 +7,10 @@ package config;
 
 import datatype.Team;
 import java.util.ArrayList;
+import java.util.HashMap;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import puresoccerfx.model.PlayerStatistic;
 
 /**
  *
@@ -14,4 +18,13 @@ import java.util.ArrayList;
  */
 public class GlobalVariable {
     public static ArrayList<Team> TEAMS = new ArrayList<>(); // store team and player infomation
+    
+    public static ObservableList<String> PLAYERATTRIBUTE = FXCollections.observableArrayList();
+    public static ObservableList<String> CATEGORY = FXCollections.observableArrayList();
+    public static ObservableList<String> ATTRIBUTE = FXCollections.observableArrayList();
+    public static ObservableList<String> DEFINITION = FXCollections.observableArrayList();
+    
+    public static String SELECTEDPLAYERATTRIBUTE = "";
+    
+    public static HashMap<String, PlayerStatistic> MAPNAMETOSTATS= new HashMap<>(); 
 }

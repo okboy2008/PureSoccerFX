@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package functions;
+package filter;
 
 import static config.GlobalVariable.TEAMS;
 import datatype.Player;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
  *
  * @author s145633
  */
-public class ShotRelatedFunctions {
+public class FilterFunctions {
     
     public static ArrayList<ShotEvent> getNormalShotEvents(ArrayList<ShotEvent> e){
         ArrayList<ShotEvent> events = new ArrayList<>();
@@ -157,13 +157,13 @@ public class ShotRelatedFunctions {
             return e;
         } else if (!shotfilter.noShotType()) {
             if (shotfilter.isNormalShot) {
-                events.addAll(functions.ShotRelatedFunctions.getNormalShotEvents(e));
+                events.addAll(filter.FilterFunctions.getNormalShotEvents(e));
             }
             if (shotfilter.isFreekick) {
-                events.addAll(functions.ShotRelatedFunctions.getFreekickEvents(e));
+                events.addAll(filter.FilterFunctions.getFreekickEvents(e));
             }
             if (shotfilter.isPenalty) {
-                events.addAll(functions.ShotRelatedFunctions.getPenaltyEvents(e));
+                events.addAll(filter.FilterFunctions.getPenaltyEvents(e));
             }
         }
         return events;
@@ -177,23 +177,23 @@ public class ShotRelatedFunctions {
             return e;
         } else if (!shotfilter.noShotResult()) {
             if (shotfilter.isShotNotOnTarget()) {
-                events.addAll(functions.ShotRelatedFunctions.getShotNotOnTargetEvents(e));
+                events.addAll(filter.FilterFunctions.getShotNotOnTargetEvents(e));
             } else {
                 if (shotfilter.isShotBlocked) {
-                    events.addAll(functions.ShotRelatedFunctions.getShotBlockedEvents(e));
+                    events.addAll(filter.FilterFunctions.getShotBlockedEvents(e));
                 }
                 if (shotfilter.isShotOffTarget) {
-                    events.addAll(functions.ShotRelatedFunctions.getShotOffTargetEvents(e));
+                    events.addAll(filter.FilterFunctions.getShotOffTargetEvents(e));
                 }
             }
             if (shotfilter.isShotOnTarget()) {
-                events.addAll(functions.ShotRelatedFunctions.getShotOnTargetEvents(e));
+                events.addAll(filter.FilterFunctions.getShotOnTargetEvents(e));
             } else {
                 if (shotfilter.isShotGoal) {
-                    events.addAll(functions.ShotRelatedFunctions.getGoalEvents(e));
+                    events.addAll(filter.FilterFunctions.getGoalEvents(e));
                 }
                 if (shotfilter.isShotSavedByKeeper) {
-                    events.addAll(functions.ShotRelatedFunctions.getShotSavedByKeeperEvents(e));
+                    events.addAll(filter.FilterFunctions.getShotSavedByKeeperEvents(e));
                 }
             }
         }
@@ -208,16 +208,16 @@ public class ShotRelatedFunctions {
             return e;
         } else if (!shotfilter.noShotPart()) {
             if (shotfilter.isLeftFoot) {
-                events.addAll(functions.ShotRelatedFunctions.getShotByLeftFootEvents(e));
+                events.addAll(filter.FilterFunctions.getShotByLeftFootEvents(e));
             }
             if (shotfilter.isRightFoot) {
-                events.addAll(functions.ShotRelatedFunctions.getShotByRightFootEvents(e));
+                events.addAll(filter.FilterFunctions.getShotByRightFootEvents(e));
             }
             if (shotfilter.isHead) {
-                events.addAll(functions.ShotRelatedFunctions.getShotByHeadEvents(e));
+                events.addAll(filter.FilterFunctions.getShotByHeadEvents(e));
             }
             if (shotfilter.isBody) {
-                events.addAll(functions.ShotRelatedFunctions.getShotByBodyEvents(e));
+                events.addAll(filter.FilterFunctions.getShotByBodyEvents(e));
             }
         }
         return events;
@@ -235,11 +235,11 @@ public class ShotRelatedFunctions {
             System.out.println("is no shot: " + shotfilter.isNoShot());
             return events;
         }
-        events = functions.ShotRelatedFunctions.getFilteredShotEventsByType(e, shotfilter);
+        events = filter.FilterFunctions.getFilteredShotEventsByType(e, shotfilter);
         //System.out.println("sizeof event type: " + events.size());
-        events = functions.ShotRelatedFunctions.getFilteredShotEventsByResult(events, shotfilter);
+        events = filter.FilterFunctions.getFilteredShotEventsByResult(events, shotfilter);
         //System.out.println("sizeof event rusult: " + events.size());
-        events = functions.ShotRelatedFunctions.getFilteredShotEventsByPart(events, shotfilter);
+        events = filter.FilterFunctions.getFilteredShotEventsByPart(events, shotfilter);
         //System.out.println("sizeof event part: " + events.size());
 
         return events;
@@ -249,11 +249,11 @@ public class ShotRelatedFunctions {
         ArrayList<ShotEvent> events = new ArrayList<>();
         for(Team team : TEAMS){
             for(Player player : team.getPlayers()){
-                events.addAll(functions.ShotRelatedFunctions.getFilteredShotEvents(player.getShotEvents(), shotfilter));
+                events.addAll(filter.FilterFunctions.getFilteredShotEvents(player.getShotEvents(), shotfilter));
                 // System.out.println(events.size());
             }
         }
-        functions.ShotRelatedFunctions.printShotEventDebugInfo(events);
+        filter.FilterFunctions.printShotEventDebugInfo(events);
         return events;
     }
     
