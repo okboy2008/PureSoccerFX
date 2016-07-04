@@ -1,2 +1,5 @@
-Goal,goal,none|,none|,false
-Pass,pass,none|,none|,false
+Goal,goal attempt,goal|,,false,
+Open Game Shot,goal attempt,,,false,
+Open Game Shot Off Target,goal attempt,,isShotOffTarget|,false,
+Open Game Shot On Target,goal attempt,,isShotOnTarget|,false,
+Open Game Shot Blocked,goal attempt,blocked|,,false,

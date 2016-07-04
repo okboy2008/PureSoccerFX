@@ -93,7 +93,7 @@ public class LoadSettings {
                 hm.put(ps.getName(), ps);
             }
                FXCollections.sort(config.GlobalVariable.PLAYERATTRIBUTE);
-               config.GlobalVariable.PLAYERATTRIBUTE.add("New Statistic");
+               //config.GlobalVariable.PLAYERATTRIBUTE.add("New Statistic");
         } catch (Exception ex) {
             Logger.getLogger(LoadSettings.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -23,6 +23,14 @@ public class PlayerStatistic {
         definition = new ArrayList<>();
     }
     
+    public PlayerStatistic(PlayerStatistic ps){
+        this.name = ps.getName();
+        this.category = ps.getCategory();
+        this.attribute = ps.getAttribute();
+        this.definition = ps.getDefinition();
+        this.customized = ps.isCustomized();
+    }
+    
     public PlayerStatistic(String name){
         attribute = new ArrayList<>();
         definition = new ArrayList<>();

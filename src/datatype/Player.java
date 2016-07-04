@@ -16,6 +16,7 @@ public class Player {
     private String pos[];
     private String age;
     private ArrayList<ShotEvent> shotEvents;
+    private ArrayList<PlayerEvent> events;
     
     @Override
     public String toString(){
@@ -134,4 +135,14 @@ public class Player {
         }
         return result;
     }
+
+    public ArrayList<PlayerEvent> getEvents() {
+        return events;
+    }
+
+    public void setEvents(ArrayList<PlayerEvent> events) {
+        this.events = events;
+    }
+    
+    
 }

@@ -10,8 +10,12 @@ import puresoccerfx.model.PlayerItem;
 import datatype.Team;
 import functions.LoadCSVdata;
 import functions.LoadSettings;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -74,10 +78,16 @@ public class MainGUIFXMLController implements Initializable {
         this.initStatusBar();
         this.initSearchTextField();
         this.initPlayerSearchTable();
+        this.initGlobalVariables();
         this.initMenus();
         this.disableStage();
     }
 
+    private void initGlobalVariables(){
+        config.GlobalVariable.M_STATISTIC = this.statisticsMenu;
+        config.GlobalVariable.M_CUSTOMIZED = this.customizedAttributeMenu;
+    }
+    
     private void loadingProjectData(){
         LoadSettings loader = new LoadSettings();
         File file = new File(config.ProjectSetting.CATEGORYFILEPATH);
@@ -323,7 +333,35 @@ public class MainGUIFXMLController implements Initializable {
                 });
     }
     
-    public void saveSettings(){
+    public void saveSettings() {
+        //File file = new File(config.ProjectSetting.STATISTICFILEPATH);
+        try {
+            Writer writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(config.ProjectSetting.STATISTICFILEPATH), "utf-8"));
+            for(String s : config.GlobalVariable.PLAYERATTRIBUTE){
+                PlayerStatistic ps = config.GlobalVariable.MAPNAMETOSTATS.get(s);
+                String line =ps.getName()+","+ps.getCategory()+",";
+                for(String s1:ps.getAttribute()){
+                    line+=s1+"|";
+                }
+                line+=",";
+                for(String s1:ps.getDefinition()){
+                    line+=s1+"|";
+                }
+                line+=",";
+                if(ps.isCustomized())
+                    line+="true";
+                else
+                    line+="false";
+                line+=",\n";
+                System.out.print(line);
+                writer.write(line);
+            }
+            writer.flush();
+            writer.close();
+        } catch (IOException ex) {
+            // report
+        } 
         
     }
     

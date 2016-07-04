@@ -5,11 +5,13 @@
  */
 package config;
 
+import datatype.Round;
 import datatype.Team;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Menu;
 import puresoccerfx.model.PlayerStatistic;
 
 /**
@@ -18,6 +20,7 @@ import puresoccerfx.model.PlayerStatistic;
  */
 public class GlobalVariable {
     public static ArrayList<Team> TEAMS = new ArrayList<>(); // store team and player infomation
+    public static ArrayList<Round> SEASON = new ArrayList<>();
     
     public static ObservableList<String> PLAYERATTRIBUTE = FXCollections.observableArrayList();
     public static ObservableList<String> CATEGORY = FXCollections.observableArrayList();
@@ -27,4 +30,6 @@ public class GlobalVariable {
     public static String SELECTEDPLAYERATTRIBUTE = "";
     
     public static HashMap<String, PlayerStatistic> MAPNAMETOSTATS= new HashMap<>(); 
+    public static Menu M_STATISTIC;
+    public static Menu M_CUSTOMIZED;
 }
