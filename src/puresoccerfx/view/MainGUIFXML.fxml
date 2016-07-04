@@ -143,33 +143,41 @@
                            <children>
                               <VBox prefHeight="200.0" prefWidth="100.0">
                                  <children>
-                                    <ComboBox fx:id="combo1" prefWidth="150.0" VBox.vgrow="ALWAYS" />
+                                    <AnchorPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                       <children>
+                                          <ComboBox fx:id="combo1" prefHeight="30.0" prefWidth="219.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
                                  </children>
                               </VBox>
                               <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                  <children>
-                                    <ComboBox fx:id="combo2" prefWidth="150.0" VBox.vgrow="ALWAYS" />
+                                    <AnchorPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                       <children>
+                                          <ComboBox fx:id="combo2" prefHeight="30.0" prefWidth="219.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
                                  </children>
                               </VBox>
-                              <ScatterChart GridPane.rowIndex="1">
+                              <ScatterChart fx:id="scatterPlot01" GridPane.rowIndex="1">
                                 <xAxis>
-                                  <CategoryAxis side="BOTTOM" />
+                                  <NumberAxis side="BOTTOM" />
                                 </xAxis>
                                 <yAxis>
                                   <NumberAxis side="LEFT" />
                                 </yAxis>
                               </ScatterChart>
-                              <ScatterChart layoutX="10.0" layoutY="163.0" GridPane.rowIndex="2">
+                              <ScatterChart fx:id="scatterPlot02" layoutX="10.0" layoutY="163.0" GridPane.rowIndex="2">
                                  <xAxis>
-                                    <CategoryAxis side="BOTTOM" />
+                                    <NumberAxis side="BOTTOM" />
                                  </xAxis>
                                  <yAxis>
                                     <NumberAxis side="LEFT" />
                                  </yAxis>
                               </ScatterChart>
-                              <ScatterChart layoutX="10.0" layoutY="315.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                              <ScatterChart fx:id="scatterPlot12" layoutX="10.0" layoutY="315.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                  <xAxis>
-                                    <CategoryAxis side="BOTTOM" />
+                                    <NumberAxis side="BOTTOM" />
                                  </xAxis>
                                  <yAxis>
                                     <NumberAxis side="LEFT" />
@@ -177,7 +185,11 @@
                               </ScatterChart>
                               <VBox layoutX="221.0" layoutY="163.0" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
                                  <children>
-                                    <ComboBox fx:id="combo3" prefWidth="150.0" VBox.vgrow="ALWAYS" />
+                                    <AnchorPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                       <children>
+                                          <ComboBox fx:id="combo3" prefHeight="30.0" prefWidth="219.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
                                  </children>
                               </VBox>
                            </children>

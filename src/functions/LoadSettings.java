@@ -78,7 +78,7 @@ public class LoadSettings {
                 config.GlobalVariable.PLAYERATTRIBUTE.add(r.get(config.DataSetConfig.S_NAME));
                 ps.setCategory(r.get(config.DataSetConfig.S_CATEGORY));
                 String tmp[] = r.get(config.DataSetConfig.S_ATTRIBUTE).split("[|]");
-                System.out.println(tmp[0]);
+                //System.out.println(tmp[0]);
                 for(int i = 0;i<tmp.length;i++){
                     ps.getAttribute().add(tmp[i]);
                 }
@@ -92,7 +92,7 @@ public class LoadSettings {
                     ps.setCustomized(true);
                 hm.put(ps.getName(), ps);
             }
-               FXCollections.sort(config.GlobalVariable.PLAYERATTRIBUTE);
+            FXCollections.sort(config.GlobalVariable.PLAYERATTRIBUTE);
                //config.GlobalVariable.PLAYERATTRIBUTE.add("New Statistic");
         } catch (Exception ex) {
             Logger.getLogger(LoadSettings.class.getName()).log(Level.SEVERE, null, ex);

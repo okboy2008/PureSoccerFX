@@ -27,6 +27,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.ScatterChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -67,9 +71,26 @@ public class MainGUIFXMLController implements Initializable {
     private Menu statisticsMenu;
     @FXML
     private Menu customizedAttributeMenu;
+    @FXML
+    private ComboBox<String> combo1;
+    @FXML
+    private ComboBox<String> combo2;
+    @FXML
+    private ComboBox<String> combo3;
+    @FXML 
+    private ScatterChart<Number,Number> scatterPlot01;
+    @FXML 
+    private ScatterChart<Number,Number> scatterPlot02;
+    @FXML 
+    private ScatterChart<Number,Number> scatterPlot12;
+    
+    
     
     // SearchTable observableList
     private ObservableList<PlayerItem> table_list = FXCollections.observableArrayList();
+    private ObservableList<XYChart.Series<Number,Number>> chart01 = FXCollections.observableArrayList();
+    private ObservableList<XYChart.Series<Number,Number>> chart02 = FXCollections.observableArrayList();
+    private ObservableList<XYChart.Series<Number,Number>> chart12 = FXCollections.observableArrayList();
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -80,9 +101,47 @@ public class MainGUIFXMLController implements Initializable {
         this.initPlayerSearchTable();
         this.initGlobalVariables();
         this.initMenus();
+        this.initAttributeComboBox(combo1,0);
+        this.initAttributeComboBox(combo2,1);
+        this.initAttributeComboBox(combo3,2);
+        //this.updateAllScatterPlot();
         this.disableStage();
     }
-
+    
+    private void updateAllScatterPlot(){
+        this.updateScatterPlot(scatterPlot01, combo1.getSelectionModel().getSelectedItem(), combo2.getSelectionModel().getSelectedItem());
+        this.updateScatterPlot(scatterPlot02, combo1.getSelectionModel().getSelectedItem(), combo3.getSelectionModel().getSelectedItem());
+        this.updateScatterPlot(scatterPlot12, combo2.getSelectionModel().getSelectedItem(), combo3.getSelectionModel().getSelectedItem());
+    }
+    
+    private void updateScatterPlot(ScatterChart<Number,Number> sc, String X, String Y){
+        sc.getData().clear();
+        sc.setTitle(X+" - "+Y);
+        int X_max = 0;
+        int Y_max = 0;
+        //PlayerStatistic psX = config.GlobalVariable.MAPNAMETOSTATS.get(X);
+        //PlayerStatistic psY = config.GlobalVariable.MAPNAMETOSTATS.get(Y);
+        XYChart.Series series1 = new XYChart.Series();
+        // all players
+        for(Team team:config.GlobalVariable.TEAMS){
+            for(Player p:team.getPlayers()){
+                int x_val = p.getStatisticByName(X);
+                if(x_val>X_max)
+                    X_max = x_val;
+                int y_val = p.getStatisticByName(Y);
+                if(y_val>Y_max)
+                    Y_max = y_val;
+                series1.getData().add(new XYChart.Data(x_val, y_val));
+            }
+        }
+        
+        NumberAxis xAxis = new NumberAxis(0, X_max, X_max/5);
+        //xAxis.autoRangingProperty().
+        NumberAxis YAxis = new NumberAxis(0, Y_max, Y_max/5);
+        
+        sc.getData().add(series1);
+    }
+    
     private void initGlobalVariables(){
         config.GlobalVariable.M_STATISTIC = this.statisticsMenu;
         config.GlobalVariable.M_CUSTOMIZED = this.customizedAttributeMenu;
@@ -147,6 +206,15 @@ public class MainGUIFXMLController implements Initializable {
         SearchTextField.textProperty()
                 .addListener((v, oldValue, newValue) -> {
                     this.searchPlayer();
+                });
+    }
+    
+    private void initAttributeComboBox(ComboBox cb, int index){
+        cb.setItems(config.GlobalVariable.PLAYERATTRIBUTE);
+        cb.getSelectionModel().select(index);
+        cb.valueProperty()
+                .addListener((e, oldVal, newVal)->{
+                    this.updateAllScatterPlot();
                 });
     }
     
@@ -278,6 +346,7 @@ public class MainGUIFXMLController implements Initializable {
             // System.out.println(config.GlobalVariable.TEAMS.size());
             this.updatePlayerTreeView();
             this.searchPlayer();
+            this.updateAllScatterPlot();
         }
     }
 
