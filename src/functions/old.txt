@@ -1,0 +1,117 @@
+ Event event = new Event(team_index, player_index, c,Integer.parseInt(csvRecord.get(config.DataSetConfig.TIME)),csvRecord.get(config.DataSetConfig.HALF).equals("1"),Integer.parseInt(csvRecord.get(config.DataSetConfig.ROUND)),opponent,isHome);
+//                /////////////////////////////////////////////////////////////////////////////////////////////
+//                // add shot events
+//                /////////////////////////////////////////////////////////////////////////////////////////////
+//                
+//                // shot attempt event
+//                if(csvRecord.get(config.DataSetConfig.CATEGORY).equals(config.DataSetConfig.C_GOALATTEMPT)){
+//                    ShotEvent new_shot_event = new ShotEvent(event);
+//                    new_shot_event.setEventType(config.EventTypeDefinition.SHOT);
+//                    new_shot_event.setIsFreekick(false);
+//                    new_shot_event.setIsPenalty(false);
+//                    // shoot by where
+//                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_BODY))
+//                        new_shot_event.setShootByWhere(config.ShotDefinition.BODY);
+//                    else if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_HEAD))
+//                        new_shot_event.setShootByWhere(config.ShotDefinition.HEAD);
+//                    else if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_LEFTFOOT))
+//                        new_shot_event.setShootByWhere(config.ShotDefinition.LEFTFOOT);
+//                    else
+//                        new_shot_event.setShootByWhere(config.ShotDefinition.RIGHTFOOT);
+//                    
+//                    // is shot blocked
+//                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_BLOCKED)){
+//                        new_shot_event.setIsShotBlocked(true);
+//                        new_shot_event.setIsShotOnTarget(false);
+//                    }else
+//                        new_shot_event.setIsShotBlocked(false);
+//                    // is shot off target
+//                    if(csvRecord.get(config.DataSetConfig.DEFINITION).contains(config.DataSetConfig.D_ISSHOTOFFTARGET)){
+//                        new_shot_event.setIsShotOnTarget(false);
+//                    }else
+//                        new_shot_event.setIsShotOnTarget(true);
+//                    // is shot goal
+//                     if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_ISGOAL)){
+//                        new_shot_event.setIsShotGoal(true);
+//                    }else
+//                        new_shot_event.setIsShotGoal(false);
+//                     
+//                     teams.get(team_index).getPlayerByIndex(player_index).addShotEvent(new_shot_event);
+//                }
+//                // freekick
+//                if(csvRecord.get(config.DataSetConfig.CATEGORY).equals(config.DataSetConfig.C_DIRECTFREEKICK)){
+//                    ShotEvent new_shot_event = new ShotEvent(event);
+//                    new_shot_event.setEventType(config.EventTypeDefinition.SHOT);
+//                    new_shot_event.setIsFreekick(true);
+//                    new_shot_event.setIsPenalty(false);
+//                    // shoot by where
+//                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_LEFTFOOT))
+//                        new_shot_event.setShootByWhere(config.ShotDefinition.LEFTFOOT);
+//                    else
+//                        new_shot_event.setShootByWhere(config.ShotDefinition.RIGHTFOOT);
+//                    
+//                    // is shot blocked
+//                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_BLOCKED)){
+//                        new_shot_event.setIsShotBlocked(true);
+//                        new_shot_event.setIsShotOnTarget(false);
+//                    }else
+//                        new_shot_event.setIsShotBlocked(false);
+//                    // is shot off target
+//                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_OVER)||csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_OFFTARGET)){
+//                        new_shot_event.setIsShotOnTarget(false);
+//                    }else
+//                        new_shot_event.setIsShotOnTarget(true);
+//                    // is shot goal
+//                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_ISGOAL)){
+//                        new_shot_event.setIsShotGoal(true);
+//                    }else
+//                        new_shot_event.setIsShotGoal(false);
+//                    teams.get(team_index).getPlayerByIndex(player_index).addShotEvent(new_shot_event);
+//                } 
+//                
+//                // penalty
+//                if(csvRecord.get(config.DataSetConfig.CATEGORY).equals(config.DataSetConfig.C_PENALTY)){
+//                    ShotEvent new_shot_event = new ShotEvent(event);
+//                    new_shot_event.setEventType(config.EventTypeDefinition.SHOT);
+//                    new_shot_event.setIsFreekick(false);
+//                    new_shot_event.setIsPenalty(true);
+//                    new_shot_event.setIsShotBlocked(false);
+//                   
+//                    // shoot by where
+//                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_LEFTFOOT))
+//                        new_shot_event.setShootByWhere(config.ShotDefinition.LEFTFOOT);
+//                    else
+//                        new_shot_event.setShootByWhere(config.ShotDefinition.RIGHTFOOT);
+//                    // where in net
+//                    int h;
+//                    int v;
+//                    int where;
+//                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(String.valueOf(config.DataSetConfig.A_LEFTCORNER)))
+//                        h = config.ShotDefinition.LEFTCORNER;
+//                    else if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(String.valueOf(config.DataSetConfig.A_RIGHTCORNER)))
+//                        h = config.ShotDefinition.RIGHTCORNER;
+//                    else
+//                        h = config.ShotDefinition.THROUGHCENTER;
+//                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(String.valueOf(config.DataSetConfig.A_GROUND)))
+//                        v = config.ShotDefinition.GROUND;
+//                    else
+//                        v = config.ShotDefinition.HIGH;
+//                    where = h * v;
+//                    // is shot goal
+//                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_ISGOAL)){
+//                        new_shot_event.setWhereInNet(where);
+//                        new_shot_event.setIsShotOnTarget(true);
+//                        new_shot_event.setIsShotGoal(true);
+//                    }else if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_SAVEDBYGOALKEEPER)){
+//                        new_shot_event.setWhereInNet(where);
+//                        new_shot_event.setIsShotOnTarget(true);
+//                        new_shot_event.setIsShotGoal(false);
+//                    }else{
+//                        new_shot_event.setIsShotGoal(false);
+//                        new_shot_event.setIsShotOnTarget(false);
+//                    }
+//                    teams.get(team_index).getPlayerByIndex(player_index).addShotEvent(new_shot_event);
+//                } 
+//                /////////////////////////////////////////////////////////////////////////////////////////////
+//                // add pass events
+//                /////////////////////////////////////////////////////////////////////////////////////////////

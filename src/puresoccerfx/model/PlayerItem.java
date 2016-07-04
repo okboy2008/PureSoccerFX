@@ -5,6 +5,8 @@
  */
 package puresoccerfx.model;
 
+import datatype.Player;
+
 /**
  *
  * @author s145633
@@ -15,6 +17,10 @@ public class PlayerItem {
     private String team_name;
     private String player_name;
 
+    public Player getPlayer(){
+        return config.GlobalVariable.TEAMS.get(team_id).getPlayerByIndex(player_id);
+    }
+    
     public String getTeam_name() {
         return team_name;
     }

@@ -265,7 +265,8 @@ public class PlayerAttributeGUIFXMLController implements Initializable {
                 config.GlobalVariable.SELECTEDPLAYERATTRIBUTE = ps.getName();
                 this.update();
             }else{
-                config.GlobalVariable.MAPNAMETOSTATS.get(config.GlobalVariable.SELECTEDPLAYERATTRIBUTE);
+                ps = config.GlobalVariable.MAPNAMETOSTATS.get(config.GlobalVariable.SELECTEDPLAYERATTRIBUTE);
+                
                 ps.setCategory(this.categoryCombobox.getSelectionModel().getSelectedItem());
                 ps.getAttribute().clear();
                 for (String item : this.attributeCheckCombobox.getCheckModel().getCheckedItems()) {
@@ -275,6 +276,7 @@ public class PlayerAttributeGUIFXMLController implements Initializable {
                 for (String item : this.definitionCheckCombobox.getCheckModel().getCheckedItems()) {
                     ps.getDefinition().add(item);
                 }
+                this.update();
             }
 
         }

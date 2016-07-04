@@ -7,7 +7,11 @@ package functions;
 
 import datatype.Coordinate;
 import datatype.Event;
+import datatype.Match;
+import datatype.MatchEvent;
 import datatype.Player;
+import datatype.PlayerEvent;
+import datatype.Round;
 import datatype.ShotEvent;
 import datatype.Team;
 import java.io.File;
@@ -31,7 +35,9 @@ public class LoadCSVdata {
     public ArrayList<Team> getTeamList(){
         ArrayList<Team> teams = new ArrayList<>();
         try{
-           
+            int round = 0;
+            int match = 0;
+            String last_match = "";
             System.out.println(file.toString());
             parser = CSVParser.parse(file, Charset.forName("UTF-8"), CSVFormat.DEFAULT);
 //            parser = CSVParser.parse(file, Charset.defaultCharset(), CSVFormat.DEFAULT);
@@ -40,6 +46,8 @@ public class LoadCSVdata {
                 // skip first record
                 if(csvRecord.getRecordNumber() == 1)
                     continue;
+//                if(csvRecord.getRecordNumber() == 2)
+//                    last_match = csvRecord.get(config.DataSetConfig.OPPONENT);
                 
                 // skip "own goal for" event
                 if(csvRecord.get(config.DataSetConfig.CATEGORY).equals(config.DataSetConfig.C_OWNGOALFOR))
@@ -74,134 +82,55 @@ public class LoadCSVdata {
                     teams.get(team_index).addPlayer(new_player);
                     player_index = teams.get(team_index).getPlayers().indexOf(new_player);
                 }
-                // add player events
-                Coordinate c = new Coordinate(Double.parseDouble(csvRecord.get(config.DataSetConfig.LOCATIONX)),Double.parseDouble(csvRecord.get(config.DataSetConfig.LOCATIONY)));
+                
+                
+                // determine round_id and match_id
+                int round_id = 0, match_id = 0;
+                int current_round = Integer.parseInt(csvRecord.get(config.DataSetConfig.ROUND));
+                if(current_round > round){
+                    round = current_round;
+                    round_id = round -1;
+                    //System.out.println(round_id);
+                    config.GlobalVariable.SEASON.add(new Round());
+                    match = 0;
+                }
+                
+                String current_match = csvRecord.get(config.DataSetConfig.OPPONENT);
+                if(!current_match.equals(last_match)){
+                    match_id = match ++;
+                    //System.out.println(match_id);
+                    config.GlobalVariable.SEASON.get(round_id).getMatches().add(new Match());
+                    last_match = current_match;
+                }
+                
+                // add events
+                MatchEvent new_event = new MatchEvent();
+                new_event.setTime(Integer.parseInt(csvRecord.get(config.DataSetConfig.TIME)));
+                new_event.setHalf(csvRecord.get(config.DataSetConfig.HALF));
+                new_event.setCategory(csvRecord.get(config.DataSetConfig.CATEGORY));
+                new_event.setAttribute(csvRecord.get(config.DataSetConfig.ATTRIBUTE));
+                new_event.setDefinition(csvRecord.get(config.DataSetConfig.DEFINITION));
+                new_event.setTeam(csvRecord.get(config.DataSetConfig.TEAM));
+                new_event.setPlayer(csvRecord.get(config.DataSetConfig.PLAYER));
+                
                 String opponent = csvRecord.get(config.DataSetConfig.OPPONENT);
                 String[] two_teams = opponent.split(" - ");
-                boolean isHome = false;
-                if(two_teams[0].equals(csvRecord.get(config.DataSetConfig.TEAM))){
-                    isHome = true;
-                    opponent = two_teams[1];
-                }else{
-                    opponent = two_teams[0];
-                }
-                Event event = new Event(team_index, player_index, c,Integer.parseInt(csvRecord.get(config.DataSetConfig.TIME)),csvRecord.get(config.DataSetConfig.HALF).equals("1"),Integer.parseInt(csvRecord.get(config.DataSetConfig.ROUND)),opponent,isHome);
-                /////////////////////////////////////////////////////////////////////////////////////////////
-                // add shot events
-                /////////////////////////////////////////////////////////////////////////////////////////////
+                String home_team = two_teams[0];
+                String away_team = two_teams[1];
+                new_event.setHome_team(home_team);
+                new_event.setAway_team(away_team);
                 
-                // shot attempt event
-                if(csvRecord.get(config.DataSetConfig.CATEGORY).equals(config.DataSetConfig.C_GOALATTEMPT)){
-                    ShotEvent new_shot_event = new ShotEvent(event);
-                    new_shot_event.setEventType(config.EventTypeDefinition.SHOT);
-                    new_shot_event.setIsFreekick(false);
-                    new_shot_event.setIsPenalty(false);
-                    // shoot by where
-                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_BODY))
-                        new_shot_event.setShootByWhere(config.ShotDefinition.BODY);
-                    else if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_HEAD))
-                        new_shot_event.setShootByWhere(config.ShotDefinition.HEAD);
-                    else if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_LEFTFOOT))
-                        new_shot_event.setShootByWhere(config.ShotDefinition.LEFTFOOT);
-                    else
-                        new_shot_event.setShootByWhere(config.ShotDefinition.RIGHTFOOT);
-                    
-                    // is shot blocked
-                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_BLOCKED)){
-                        new_shot_event.setIsShotBlocked(true);
-                        new_shot_event.setIsShotOnTarget(false);
-                    }else
-                        new_shot_event.setIsShotBlocked(false);
-                    // is shot off target
-                    if(csvRecord.get(config.DataSetConfig.DEFINITION).contains(config.DataSetConfig.D_ISSHOTOFFTARGET)){
-                        new_shot_event.setIsShotOnTarget(false);
-                    }else
-                        new_shot_event.setIsShotOnTarget(true);
-                    // is shot goal
-                     if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_ISGOAL)){
-                        new_shot_event.setIsShotGoal(true);
-                    }else
-                        new_shot_event.setIsShotGoal(false);
-                     
-                     teams.get(team_index).getPlayerByIndex(player_index).addShotEvent(new_shot_event);
-                }
-                // freekick
-                if(csvRecord.get(config.DataSetConfig.CATEGORY).equals(config.DataSetConfig.C_DIRECTFREEKICK)){
-                    ShotEvent new_shot_event = new ShotEvent(event);
-                    new_shot_event.setEventType(config.EventTypeDefinition.SHOT);
-                    new_shot_event.setIsFreekick(true);
-                    new_shot_event.setIsPenalty(false);
-                    // shoot by where
-                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_LEFTFOOT))
-                        new_shot_event.setShootByWhere(config.ShotDefinition.LEFTFOOT);
-                    else
-                        new_shot_event.setShootByWhere(config.ShotDefinition.RIGHTFOOT);
-                    
-                    // is shot blocked
-                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_BLOCKED)){
-                        new_shot_event.setIsShotBlocked(true);
-                        new_shot_event.setIsShotOnTarget(false);
-                    }else
-                        new_shot_event.setIsShotBlocked(false);
-                    // is shot off target
-                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_OVER)||csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_OFFTARGET)){
-                        new_shot_event.setIsShotOnTarget(false);
-                    }else
-                        new_shot_event.setIsShotOnTarget(true);
-                    // is shot goal
-                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_ISGOAL)){
-                        new_shot_event.setIsShotGoal(true);
-                    }else
-                        new_shot_event.setIsShotGoal(false);
-                    teams.get(team_index).getPlayerByIndex(player_index).addShotEvent(new_shot_event);
-                } 
+                new_event.setRound(Integer.parseInt(csvRecord.get(config.DataSetConfig.ROUND)));
                 
-                // penalty
-                if(csvRecord.get(config.DataSetConfig.CATEGORY).equals(config.DataSetConfig.C_PENALTY)){
-                    ShotEvent new_shot_event = new ShotEvent(event);
-                    new_shot_event.setEventType(config.EventTypeDefinition.SHOT);
-                    new_shot_event.setIsFreekick(false);
-                    new_shot_event.setIsPenalty(true);
-                    new_shot_event.setIsShotBlocked(false);
-                   
-                    // shoot by where
-                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_LEFTFOOT))
-                        new_shot_event.setShootByWhere(config.ShotDefinition.LEFTFOOT);
-                    else
-                        new_shot_event.setShootByWhere(config.ShotDefinition.RIGHTFOOT);
-                    // where in net
-                    int h;
-                    int v;
-                    int where;
-                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(String.valueOf(config.DataSetConfig.A_LEFTCORNER)))
-                        h = config.ShotDefinition.LEFTCORNER;
-                    else if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(String.valueOf(config.DataSetConfig.A_RIGHTCORNER)))
-                        h = config.ShotDefinition.RIGHTCORNER;
-                    else
-                        h = config.ShotDefinition.THROUGHCENTER;
-                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(String.valueOf(config.DataSetConfig.A_GROUND)))
-                        v = config.ShotDefinition.GROUND;
-                    else
-                        v = config.ShotDefinition.HIGH;
-                    where = h * v;
-                    // is shot goal
-                    if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_ISGOAL)){
-                        new_shot_event.setWhereInNet(where);
-                        new_shot_event.setIsShotOnTarget(true);
-                        new_shot_event.setIsShotGoal(true);
-                    }else if(csvRecord.get(config.DataSetConfig.ATTRIBUTE).contains(config.DataSetConfig.A_SAVEDBYGOALKEEPER)){
-                        new_shot_event.setWhereInNet(where);
-                        new_shot_event.setIsShotOnTarget(true);
-                        new_shot_event.setIsShotGoal(false);
-                    }else{
-                        new_shot_event.setIsShotGoal(false);
-                        new_shot_event.setIsShotOnTarget(false);
-                    }
-                    teams.get(team_index).getPlayerByIndex(player_index).addShotEvent(new_shot_event);
-                } 
-                /////////////////////////////////////////////////////////////////////////////////////////////
-                // add pass events
-                /////////////////////////////////////////////////////////////////////////////////////////////
+                Coordinate c = new Coordinate(Double.parseDouble(csvRecord.get(config.DataSetConfig.LOCATIONX)),Double.parseDouble(csvRecord.get(config.DataSetConfig.LOCATIONY)));
+                new_event.setCoord(c);
+                config.GlobalVariable.SEASON.get(round_id).getMatches().get(match_id).getMatch_events().add(new_event);
+                int event_id = config.GlobalVariable.SEASON.get(round_id).getMatches().get(match_id).getMatch_events().indexOf(new_event);
+                //System.out.println(event_id);
+                
+                ArrayList<PlayerEvent> list = teams.get(team_index).getPlayerByIndex(player_index).getEvents();
+                //System.out.println(list == null);
+                list.add(new PlayerEvent(round_id, match_id, event_id));
             }
             
         }catch(Exception e){

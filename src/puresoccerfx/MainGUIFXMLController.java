@@ -329,6 +329,12 @@ public class MainGUIFXMLController implements Initializable {
                 .addListener((v, oldValue, newValue) -> {
                     if(newValue!=null){
                         System.out.println(newValue.getValue().toString());
+                        if(!newValue.getValue().isTeam()){
+                            newValue.getValue().getPlayer().printEvents();
+                            if(config.GlobalVariable.SELECTEDPLAYERATTRIBUTE!=null)
+                                System.out.println(config.GlobalVariable.SELECTEDPLAYERATTRIBUTE+": "+newValue.getValue().getPlayer().getStatisticByName(config.GlobalVariable.SELECTEDPLAYERATTRIBUTE));
+                        }
+                        
                     }
                 });
     }
