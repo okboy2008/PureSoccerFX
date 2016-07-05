@@ -163,4 +163,25 @@ public class Player {
         return count;
     }
     
+    public ArrayList<PlayerEvent> getEventByName(String n){
+        ArrayList<PlayerEvent> list = new ArrayList<>();
+        PlayerStatistic ps = config.GlobalVariable.MAPNAMETOSTATS.get(n);
+        for(PlayerEvent e:events){
+            if(e.isEventMatchStatistic(ps))
+                list.add(e);
+        }
+        return list;
+    }
+    
+    public int getAppearence(){
+        int count = 0;
+        int round = 0;
+        for(PlayerEvent e:events){
+            if(e.getEvent().getRound()!=round){
+                count ++;
+                round = e.getEvent().getRound();
+            }
+        }
+        return count;
+    }
 }

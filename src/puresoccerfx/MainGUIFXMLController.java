@@ -83,6 +83,12 @@ public class MainGUIFXMLController implements Initializable {
     private ScatterChart<Number,Number> scatterPlot02;
     @FXML 
     private ScatterChart<Number,Number> scatterPlot12;
+    @FXML 
+    private ScatterChart<Number,Number> scatterPlot10;
+    @FXML 
+    private ScatterChart<Number,Number> scatterPlot20;
+    @FXML 
+    private ScatterChart<Number,Number> scatterPlot21;
     
     
     
@@ -91,6 +97,9 @@ public class MainGUIFXMLController implements Initializable {
     private ObservableList<XYChart.Series<Number,Number>> chart01 = FXCollections.observableArrayList();
     private ObservableList<XYChart.Series<Number,Number>> chart02 = FXCollections.observableArrayList();
     private ObservableList<XYChart.Series<Number,Number>> chart12 = FXCollections.observableArrayList();
+    private ObservableList<XYChart.Series<Number,Number>> chart10 = FXCollections.observableArrayList();
+    private ObservableList<XYChart.Series<Number,Number>> chart20 = FXCollections.observableArrayList();
+    private ObservableList<XYChart.Series<Number,Number>> chart21 = FXCollections.observableArrayList();
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -112,6 +121,38 @@ public class MainGUIFXMLController implements Initializable {
         this.updateScatterPlot(scatterPlot01, combo1.getSelectionModel().getSelectedItem(), combo2.getSelectionModel().getSelectedItem());
         this.updateScatterPlot(scatterPlot02, combo1.getSelectionModel().getSelectedItem(), combo3.getSelectionModel().getSelectedItem());
         this.updateScatterPlot(scatterPlot12, combo2.getSelectionModel().getSelectedItem(), combo3.getSelectionModel().getSelectedItem());
+        
+        this.updateAvgScatterPlot(scatterPlot10, combo2.getSelectionModel().getSelectedItem(), combo1.getSelectionModel().getSelectedItem());
+        this.updateAvgScatterPlot(scatterPlot20, combo3.getSelectionModel().getSelectedItem(), combo1.getSelectionModel().getSelectedItem());
+        this.updateAvgScatterPlot(scatterPlot21, combo3.getSelectionModel().getSelectedItem(), combo2.getSelectionModel().getSelectedItem());
+    }
+    
+    private void updateAvgScatterPlot(ScatterChart<Number,Number> sc, String X, String Y){
+        sc.getData().clear();
+        sc.setTitle(X+" - "+Y);
+        double X_max = 0;
+        double Y_max = 0;
+        //PlayerStatistic psX = config.GlobalVariable.MAPNAMETOSTATS.get(X);
+        //PlayerStatistic psY = config.GlobalVariable.MAPNAMETOSTATS.get(Y);
+        XYChart.Series series1 = new XYChart.Series();
+        // all players
+        for(Team team:config.GlobalVariable.TEAMS){
+            for(Player p:team.getPlayers()){
+                double x_val = ((double)p.getStatisticByName(X))/p.getAppearence();
+                if(x_val>X_max)
+                    X_max = x_val;
+                double y_val = ((double)p.getStatisticByName(Y))/p.getAppearence();
+                if(y_val>Y_max)
+                    Y_max = y_val;
+                series1.getData().add(new XYChart.Data(x_val, y_val));
+            }
+        }
+        
+        NumberAxis xAxis = new NumberAxis(0, X_max, X_max/5);
+        //xAxis.autoRangingProperty().
+        NumberAxis YAxis = new NumberAxis(0, Y_max, Y_max/5);
+        
+        sc.getData().add(series1);
     }
     
     private void updateScatterPlot(ScatterChart<Number,Number> sc, String X, String Y){
@@ -175,9 +216,29 @@ public class MainGUIFXMLController implements Initializable {
     }
     
     private void initStatisticsMenu(){
-        System.out.println(config.GlobalVariable.MAPNAMETOSTATS.values().size());
-        for(PlayerStatistic ps:config.GlobalVariable.MAPNAMETOSTATS.values()){
-            System.out.println(ps.getName());
+        //System.out.println(config.GlobalVariable.MAPNAMETOSTATS.values().size());
+//        for(PlayerStatistic ps:config.GlobalVariable.MAPNAMETOSTATS.values()){
+//            System.out.println(ps.getName());
+//            if(ps.isCustomized()){
+//                MenuItem item = new MenuItem(ps.getName());
+//                item.setOnAction(e -> {
+//                    config.GlobalVariable.SELECTEDPLAYERATTRIBUTE = item.getText();
+//                    this.openPlayerAttributeGUI();
+//                });
+//                this.customizedAttributeMenu.getItems().add(this.customizedAttributeMenu.getItems().size()-2, item);
+//            }else{
+//                MenuItem item = new MenuItem(ps.getName());
+//                item.setOnAction(e -> {
+//                    config.GlobalVariable.SELECTEDPLAYERATTRIBUTE = item.getText();
+//                    this.openPlayerAttributeGUI();
+//                });
+//                //System.out.println("smenu size: "+ this.statisticsMenu.getItems().size());
+//                this.statisticsMenu.getItems().add(this.statisticsMenu.getItems().size()-2, item);
+//            }
+//        }
+        for(String s:config.GlobalVariable.PLAYERATTRIBUTE){
+//            System.out.println(ps.getName());
+            PlayerStatistic ps = config.GlobalVariable.MAPNAMETOSTATS.get(s);
             if(ps.isCustomized()){
                 MenuItem item = new MenuItem(ps.getName());
                 item.setOnAction(e -> {
@@ -191,7 +252,7 @@ public class MainGUIFXMLController implements Initializable {
                     config.GlobalVariable.SELECTEDPLAYERATTRIBUTE = item.getText();
                     this.openPlayerAttributeGUI();
                 });
-                System.out.println("smenu size: "+ this.statisticsMenu.getItems().size());
+                //System.out.println("smenu size: "+ this.statisticsMenu.getItems().size());
                 this.statisticsMenu.getItems().add(this.statisticsMenu.getItems().size()-2, item);
             }
         }

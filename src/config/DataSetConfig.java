@@ -10,6 +10,9 @@ package config;
  * @author s145633
  */
 public class DataSetConfig {
+    // None
+    public static final String NONE = "- none -";
+    
     // Statistics
     public static final int S_NAME = 0;
     public static final int S_CATEGORY = 1;

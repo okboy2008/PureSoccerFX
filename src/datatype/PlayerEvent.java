@@ -22,15 +22,21 @@ public class PlayerEvent {
     
     public boolean isEventMatchStatistic(PlayerStatistic ps){
         MatchEvent e = this.getEvent();
-        if(!e.getCategory().equals(ps.getCategory()))
-            return false;
-        for(String s:ps.getAttribute()){
-            if(!e.getAttribute().contains(s))
+        if(!e.getCategory().equals(ps.getCategory())){
+            if(!ps.getCategory().equals(config.DataSetConfig.NONE))
                 return false;
         }
+        for(String s:ps.getAttribute()){
+            if(!s.equals(config.DataSetConfig.NONE)){
+            if(!e.getAttribute().contains(s))
+                return false;
+            }
+        }
         for(String s:ps.getDefinition()){
+            if(!s.equals(config.DataSetConfig.NONE)){
             if(!e.getDefinition().contains(s))
                 return false;
+            }
         }
         return true;
     }

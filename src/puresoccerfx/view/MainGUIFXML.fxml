@@ -192,6 +192,30 @@
                                     </AnchorPane>
                                  </children>
                               </VBox>
+                              <ScatterChart fx:id="scatterPlot10" layoutX="10.0" layoutY="163.0" GridPane.columnIndex="1">
+                                 <xAxis>
+                                    <NumberAxis side="BOTTOM" />
+                                 </xAxis>
+                                 <yAxis>
+                                    <NumberAxis side="LEFT" />
+                                 </yAxis>
+                              </ScatterChart>
+                              <ScatterChart fx:id="scatterPlot20" layoutX="221.0" layoutY="10.0" GridPane.columnIndex="2">
+                                 <xAxis>
+                                    <NumberAxis side="BOTTOM" />
+                                 </xAxis>
+                                 <yAxis>
+                                    <NumberAxis side="LEFT" />
+                                 </yAxis>
+                              </ScatterChart>
+                              <ScatterChart fx:id="scatterPlot21" layoutX="431.0" layoutY="10.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                 <xAxis>
+                                    <NumberAxis side="BOTTOM" />
+                                 </xAxis>
+                                 <yAxis>
+                                    <NumberAxis side="LEFT" />
+                                 </yAxis>
+                              </ScatterChart>
                            </children>
                         </GridPane>
                      </children>

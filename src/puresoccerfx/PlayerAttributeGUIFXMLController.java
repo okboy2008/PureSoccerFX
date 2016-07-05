@@ -122,12 +122,12 @@ public class PlayerAttributeGUIFXMLController implements Initializable {
     private void updateCategory(){
         if(config.GlobalVariable.SELECTEDPLAYERATTRIBUTE != null){
             PlayerStatistic ps = config.GlobalVariable.MAPNAMETOSTATS.get(config.GlobalVariable.SELECTEDPLAYERATTRIBUTE);
-            if(ps.getCategory().equals("none"))
-                this.categoryCombobox.setPromptText("Please select");
-            else
-                this.categoryCombobox.getSelectionModel().select(ps.getCategory());
+//            if(ps.getCategory().equals(config.DataSetConfig.NONE))
+//                this.categoryCombobox.setPromptText("Please select");
+//            else
+            this.categoryCombobox.getSelectionModel().select(ps.getCategory());
         }else
-            this.categoryCombobox.setPromptText("Please select");
+            this.categoryCombobox.getSelectionModel().select(config.DataSetConfig.NONE);
     }
     
     private void initAttribute(){
@@ -140,7 +140,7 @@ public class PlayerAttributeGUIFXMLController implements Initializable {
             PlayerStatistic ps = config.GlobalVariable.MAPNAMETOSTATS.get(config.GlobalVariable.SELECTEDPLAYERATTRIBUTE);
             for(int i=0;i<ps.getAttribute().size();i++){
                 System.out.println("attribute"+i+": "+ps.getAttribute().get(i));
-                if(!ps.getAttribute().get(i).equals("none"))
+//                if(!ps.getAttribute().get(i).equals("none"))
                     this.attributeCheckCombobox.getCheckModel().check(ps.getAttribute().get(i));
             }
         }
@@ -155,7 +155,7 @@ public class PlayerAttributeGUIFXMLController implements Initializable {
         if(config.GlobalVariable.SELECTEDPLAYERATTRIBUTE != null){
             PlayerStatistic ps = config.GlobalVariable.MAPNAMETOSTATS.get(config.GlobalVariable.SELECTEDPLAYERATTRIBUTE);
             for(int i=0;i<ps.getDefinition().size();i++){
-                if(!ps.getDefinition().get(i).equals("none"))
+//                if(!ps.getDefinition().get(i).equals("none"))
                     this.definitionCheckCombobox.getCheckModel().check(ps.getDefinition().get(i));
             }
         }
