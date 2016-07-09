@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,6 +28,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.Chart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
@@ -38,12 +40,14 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import puresoccerfx.model.PlayerStatistic;
+import puresoccerfx.model.ScatterChartExtraData;
 
 
 /**
@@ -90,7 +94,7 @@ public class MainGUIFXMLController implements Initializable {
     @FXML 
     private ScatterChart<Number,Number> scatterPlot21;
     
-    
+    private double SCALE_DELTA = 1.1;
     
     // SearchTable observableList
     private ObservableList<PlayerItem> table_list = FXCollections.observableArrayList();
@@ -132,6 +136,7 @@ public class MainGUIFXMLController implements Initializable {
         sc.setTitle(X+" - "+Y);
         double X_max = 0;
         double Y_max = 0;
+        ObservableList<XYChart.Series<Number,Number>> chart = FXCollections.observableArrayList();
         //PlayerStatistic psX = config.GlobalVariable.MAPNAMETOSTATS.get(X);
         //PlayerStatistic psY = config.GlobalVariable.MAPNAMETOSTATS.get(Y);
         XYChart.Series series1 = new XYChart.Series();
@@ -144,7 +149,18 @@ public class MainGUIFXMLController implements Initializable {
                 double y_val = ((double)p.getStatisticByName(Y))/p.getAppearence();
                 if(y_val>Y_max)
                     Y_max = y_val;
-                series1.getData().add(new XYChart.Data(x_val, y_val));
+                XYChart.Data<Number,Number> new_data = new XYChart.Data(x_val, y_val);
+                ScatterChartExtraData extra_data = new ScatterChartExtraData();
+                
+                extra_data.setName(p.getName());
+                extra_data.setPlayer_id(team.getPlayers().indexOf(p));
+                extra_data.setPlayer_id(config.GlobalVariable.TEAMS.indexOf(team));
+                extra_data.setX(X);
+                extra_data.setY(Y);
+                new_data.setExtraValue(extra_data);
+//                new_data.setExtraValue(p.getName());
+                series1.getData().add(new_data);
+
             }
         }
         
@@ -152,7 +168,32 @@ public class MainGUIFXMLController implements Initializable {
         //xAxis.autoRangingProperty().
         NumberAxis YAxis = new NumberAxis(0, Y_max, Y_max/5);
         
-        sc.getData().add(series1);
+        chart.add(series1);
+        sc.setData(chart);
+        this.addTooltipToChart(sc);
+        sc.setOnMouseClicked(e -> {
+            config.GlobalVariable.CLICKEDCHARTDATA = sc.getData();
+            //sc.getTitle();
+            //sc.getData();
+            this.openFXMLWindow("/puresoccerfx/view/ScatterChartGUIFXML.fxml", X + " - " + Y + " Scatter Chart");
+//            sc.getData().clear();
+//            sc.getData().add(series1);
+        });
+        
+      
+
+    }
+    
+    private void addTooltipToChart(ScatterChart<Number,Number> chart){
+        for (XYChart.Series<Number, Number> s : chart.getData()) {
+            for (XYChart.Data<Number, Number> d : s.getData()) {
+                // System.out.println(d.getNode() == null);
+                DecimalFormat f = new DecimalFormat("#.##");
+                Tooltip.install(d.getNode(), new Tooltip(((ScatterChartExtraData)d.getExtraValue()).getName() + "\n"
+                        + ((ScatterChartExtraData)d.getExtraValue()).getX()+ ": " + f.format(d.getXValue()) + "\n"
+                        + ((ScatterChartExtraData)d.getExtraValue()).getY()+ ": " + f.format(d.getYValue()) + "\n"));
+            }
+        }
     }
     
     private void updateScatterPlot(ScatterChart<Number,Number> sc, String X, String Y){
@@ -160,6 +201,7 @@ public class MainGUIFXMLController implements Initializable {
         sc.setTitle(X+" - "+Y);
         int X_max = 0;
         int Y_max = 0;
+        ObservableList<XYChart.Series<Number,Number>> chart = FXCollections.observableArrayList();
         //PlayerStatistic psX = config.GlobalVariable.MAPNAMETOSTATS.get(X);
         //PlayerStatistic psY = config.GlobalVariable.MAPNAMETOSTATS.get(Y);
         XYChart.Series series1 = new XYChart.Series();
@@ -172,7 +214,19 @@ public class MainGUIFXMLController implements Initializable {
                 int y_val = p.getStatisticByName(Y);
                 if(y_val>Y_max)
                     Y_max = y_val;
-                series1.getData().add(new XYChart.Data(x_val, y_val));
+                XYChart.Data<Number,Number> new_data = new XYChart.Data(x_val, y_val);
+                // new_data.set
+                
+                ScatterChartExtraData extra_data = new ScatterChartExtraData();
+                
+                extra_data.setName(p.getName());
+                extra_data.setPlayer_id(team.getPlayers().indexOf(p));
+                extra_data.setPlayer_id(config.GlobalVariable.TEAMS.indexOf(team));
+                extra_data.setX(X);
+                extra_data.setY(Y);
+                new_data.setExtraValue(extra_data);
+//                new_data.setExtraValue(p.getName());
+                series1.getData().add(new_data);
             }
         }
         
@@ -180,7 +234,20 @@ public class MainGUIFXMLController implements Initializable {
         //xAxis.autoRangingProperty().
         NumberAxis YAxis = new NumberAxis(0, Y_max, Y_max/5);
         
-        sc.getData().add(series1);
+        chart.add(series1);
+        sc.setData(chart);
+        this.addTooltipToChart(sc);
+        sc.setOnMouseClicked(e -> {
+         
+//            config.GlobalVariable.CLICKEDSCATTERCHART = new ScatterChart<>(xAxis, YAxis, sc.getData());
+            config.GlobalVariable.CLICKEDCHARTDATA = sc.getData();
+            // config.GlobalVariable.CLICKEDSCATTERCHART.add(series);
+            this.openFXMLWindow("/puresoccerfx/view/ScatterChartGUIFXML.fxml", X + " - " + Y + " Scatter Chart");
+//            this.updateScatterPlot(sc, X, Y);
+//            sc.getData().clear();
+//            sc.getData().add(series1);
+        });
+
     }
     
     private void initGlobalVariables(){
@@ -354,6 +421,24 @@ public class MainGUIFXMLController implements Initializable {
         this.leftSplitPane.setDisable(false);
         this.middleSplitPane.setDisable(false);
         this.rightSplitPane.setDisable(false);
+    }
+    
+     public void openFXMLWindow(String path, String title){
+        
+        try {
+            Parent root;
+            // System.out.println(getClass().getResource(path));
+            
+            root = FXMLLoader.load(getClass().getResource(path));
+            Stage stage = new Stage();
+            stage.setTitle(title);
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception ex) {
+            Logger.getLogger(MainGUIFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
+
     }
     
     public void openAboutGUI(){

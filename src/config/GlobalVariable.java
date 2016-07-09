@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.chart.ScatterChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Menu;
 import puresoccerfx.model.PlayerStatistic;
 
@@ -28,6 +30,8 @@ public class GlobalVariable {
     public static ObservableList<String> DEFINITION = FXCollections.observableArrayList();
     
     public static String SELECTEDPLAYERATTRIBUTE = "";
+    public static ScatterChart<Number,Number> CLICKEDSCATTERCHART;
+    public static ObservableList<XYChart.Series<Number,Number>> CLICKEDCHARTDATA = FXCollections.observableArrayList();
     
     public static HashMap<String, PlayerStatistic> MAPNAMETOSTATS= new HashMap<>(); 
     public static Menu M_STATISTIC;

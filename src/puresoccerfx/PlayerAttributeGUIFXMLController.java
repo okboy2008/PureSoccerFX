@@ -143,6 +143,8 @@ public class PlayerAttributeGUIFXMLController implements Initializable {
 //                if(!ps.getAttribute().get(i).equals("none"))
                     this.attributeCheckCombobox.getCheckModel().check(ps.getAttribute().get(i));
             }
+        }else{
+            this.attributeCheckCombobox.getCheckModel().check(config.DataSetConfig.NONE);
         }
     }
     
@@ -158,6 +160,9 @@ public class PlayerAttributeGUIFXMLController implements Initializable {
 //                if(!ps.getDefinition().get(i).equals("none"))
                     this.definitionCheckCombobox.getCheckModel().check(ps.getDefinition().get(i));
             }
+        }
+        else{
+            this.definitionCheckCombobox.getCheckModel().check(config.DataSetConfig.NONE);
         }
     }
     
