@@ -49,6 +49,10 @@ public class Player {
 //        this.shotEvents.add(e);
 //    }
     
+    public boolean isEqual(Player p){
+        return p.getName().equals(this.name) && p.getEvents().size() == this.events.size();
+    }
+    
     public String getName(){
         return this.name;
     }

@@ -16,6 +16,7 @@
 
 package org.gillius.jfxutils.chart;
 
+import datatype.Player;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -23,6 +24,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
@@ -37,6 +40,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import org.gillius.jfxutils.EventHandlerManager;
+import puresoccerfx.model.PlayerItem;
+import puresoccerfx.model.ScatterChartExtraData;
 
 /**
  * ChartZoomManager manages a zooming selection rectangle and the bounds of the graph. It can be
@@ -124,7 +129,39 @@ public class ChartZoomManager {
 	private final XYChartInfo chartInfo;
 
 	private final Timeline zoomAnimation = new Timeline();
+        
+        private String X;
+        private String Y;
+        private ObservableList<XYChart.Series<Number,Number>> data;
 
+    public ObservableList<XYChart.Series<Number, Number>> getData() {
+        return data;
+    }
+
+    public void setData(ObservableList<XYChart.Series<Number, Number>> data) {
+        this.data = data;
+    }
+        
+        
+
+    public String getX() {
+        return X;
+    }
+
+    public void setX(String X) {
+        this.X = X;
+    }
+
+    public String getY() {
+        return Y;
+    }
+
+    public void setY(String Y) {
+        this.Y = Y;
+    }
+
+        
+        
 	/**
 	 * Construct a new ChartZoomManager. See {@link ChartZoomManager} documentation for normal usage.
 	 *
@@ -335,7 +372,7 @@ public class ChartZoomManager {
 		Rectangle2D plotArea = chartInfo.getPlotArea();
 		DefaultChartInputContext context = new DefaultChartInputContext( chartInfo, x, y );
 		zoomMode = axisConstraintStrategy.getConstraint(context);
-
+                System.out.println("zoomMode: "+zoomMode);
 		if ( zoomMode == AxisConstraint.Both ) {
 			selectRect.setTranslateX( x );
 			selectRect.setTranslateY( y );
@@ -388,14 +425,44 @@ public class ChartZoomManager {
 		}
 	}
 
+        private void printSelectedZone(){
+            System.out.println("x: "+this.selectRect.getX());
+            System.out.println("y: "+this.selectRect.getY());
+            System.out.println("width: "+ this.selectRect.getWidth());
+            System.out.println("height: "+ this.selectRect.getHeight());
+        }
+        
 	private void onMouseReleased() {
-		if ( !selecting.get() )
+		if ( !selecting.get() ){
+                    // reset selection
+                    if(config.GlobalVariable.SELECTED_PLAYER_ITEM.size()!=config.GlobalVariable.FILTERED_PLAYER_ITEM.size()){
+                        config.GlobalVariable.SELECTED_PLAYER_ITEM.clear();
+                        for(PlayerItem p:config.GlobalVariable.FILTERED_PLAYER_ITEM){
+                            if(config.GlobalVariable.FILTERED_PLAYER_ITEM.indexOf(p)== config.GlobalVariable.FILTERED_PLAYER_ITEM.size()-1){
+                                config.GlobalVariable.NEED_UPDATE = true;
+                                System.out.println("set update true in 1");
+                            }
+                            config.GlobalVariable.SELECTED_PLAYER_ITEM.add(p);
+                        }
+                    }
 			return;
+                }
 
 		//Prevent a silly zoom... I'm still undecided about && vs ||
 		if ( selectRect.getWidth() == 0.0 ||
 				 selectRect.getHeight() == 0.0 ) {
 			selecting.set( false );
+                        // reset here?
+                         if(config.GlobalVariable.SELECTED_PLAYER_ITEM.size()!=config.GlobalVariable.FILTERED_PLAYER_ITEM.size()){
+                        config.GlobalVariable.SELECTED_PLAYER_ITEM.clear();
+                        for(PlayerItem p:config.GlobalVariable.FILTERED_PLAYER_ITEM){
+                            if(config.GlobalVariable.FILTERED_PLAYER_ITEM.indexOf(p)== config.GlobalVariable.FILTERED_PLAYER_ITEM.size()-1){
+                                config.GlobalVariable.NEED_UPDATE = true;
+                                System.out.println("set update true in 2");
+                            }
+                            config.GlobalVariable.SELECTED_PLAYER_ITEM.add(p);
+                        }
+                    }
 			return;
 		}
 
@@ -403,35 +470,148 @@ public class ChartZoomManager {
 				selectRect.getTranslateX(), selectRect.getTranslateY(),
 				rectX.get(), rectY.get()
 		);
+                
+                System.out.println("upper-left: "+ zoomWindow.getMinX()+zoomWindow.getMinY());
+                System.out.println("bottom-right: "+ zoomWindow.getMaxX()+zoomWindow.getMaxY());
+                
+                config.GlobalVariable.MIN_X = zoomWindow.getMinX();
+                config.GlobalVariable.MIN_Y = zoomWindow.getMinY();
+                config.GlobalVariable.MAX_X = zoomWindow.getMaxX();
+                config.GlobalVariable.MAX_Y = zoomWindow.getMaxY();
+                
+                System.out.println("X attribute: "+ X);
+                System.out.println("Y attribute: "+ Y);
+                
+                // selection
+//                ObservableList<Player> copy_list = FXCollections.observableArrayList(config.GlobalVariable.SELECTED_PLAYER);
+//                for(Player p:copy_list){
+//                    int x_count = p.getStatisticByName(X);
+//                    int y_count = p.getStatisticByName(Y);
+//                    
+//                    
+//                    if(x_count<config.GlobalVariable.MIN_X || x_count > config.GlobalVariable.MAX_X || y_count<config.GlobalVariable.MIN_Y || y_count>config.GlobalVariable.MAX_Y){
+//                        config.GlobalVariable.SELECTED_PLAYER.remove(p);
+//                    }
+//                }
 
-		xAxis.setAutoRanging( false );
-		yAxis.setAutoRanging( false );
-		if ( zoomAnimated.get() ) {
-			zoomAnimation.stop();
-			zoomAnimation.getKeyFrames().setAll(
-					new KeyFrame( Duration.ZERO,
-					              new KeyValue( xAxis.lowerBoundProperty(), xAxis.getLowerBound() ),
-					              new KeyValue( xAxis.upperBoundProperty(), xAxis.getUpperBound() ),
-					              new KeyValue( yAxis.lowerBoundProperty(), yAxis.getLowerBound() ),
-					              new KeyValue( yAxis.upperBoundProperty(), yAxis.getUpperBound() )
-					),
-			    new KeyFrame( Duration.millis( zoomDurationMillis.get() ),
-			                  new KeyValue( xAxis.lowerBoundProperty(), zoomWindow.getMinX() ),
-			                  new KeyValue( xAxis.upperBoundProperty(), zoomWindow.getMaxX() ),
-			                  new KeyValue( yAxis.lowerBoundProperty(), zoomWindow.getMinY() ),
-			                  new KeyValue( yAxis.upperBoundProperty(), zoomWindow.getMaxY() )
-			    )
-			);
-			zoomAnimation.play();
-		} else {
-			zoomAnimation.stop();
-			xAxis.setLowerBound( zoomWindow.getMinX() );
-			xAxis.setUpperBound( zoomWindow.getMaxX() );
-			yAxis.setLowerBound( zoomWindow.getMinY() );
-			yAxis.setUpperBound( zoomWindow.getMaxY() );
-		}
-
-		selecting.set( false );
+                XYChart.Series<Number,Number> series1 = new XYChart.Series(); // unselected players
+                
+                XYChart.Series<Number,Number> series2 = new XYChart.Series(); // selected players
+                
+                for(XYChart.Data<Number,Number> d:data.get(0).getData()){
+                    double x_count = d.getXValue().doubleValue();
+                    double y_count = d.getYValue().doubleValue();
+                    ScatterChartExtraData data = (ScatterChartExtraData)d.getExtraValue();
+                    if(x_count<config.GlobalVariable.MIN_X || x_count > config.GlobalVariable.MAX_X || y_count<config.GlobalVariable.MIN_Y || y_count>config.GlobalVariable.MAX_Y){
+                        series1.getData().add(d);
+                    }else{
+                        boolean found = false;
+                        for(PlayerItem p:config.GlobalVariable.SELECTED_PLAYER_ITEM){
+                            if(p.getPlayer().equals(data.getPlayer())){
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(found)
+                            series2.getData().add(d);
+                        else
+                            series1.getData().add(d);
+                    }
+                }
+                
+                for(XYChart.Data<Number,Number> d:data.get(1).getData()){
+                    double x_count = d.getXValue().doubleValue();
+                    double y_count = d.getYValue().doubleValue();
+                    ScatterChartExtraData data = (ScatterChartExtraData)d.getExtraValue();
+                    if(x_count<config.GlobalVariable.MIN_X || x_count > config.GlobalVariable.MAX_X || y_count<config.GlobalVariable.MIN_Y || y_count>config.GlobalVariable.MAX_Y){
+                        series1.getData().add(d);
+                    }else{
+                        boolean found = false;
+//                        for(Player p:config.GlobalVariable.SELECTED_PLAYER){
+//                            if(p.isEqual(data.getPlayer())){
+//                                found = true;
+//                                break;
+//                            }
+//                        }
+                        for(PlayerItem p : config.GlobalVariable.SELECTED_PLAYER_ITEM){
+                            if(p.getPlayer().equals(data.getPlayer())){
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(found)
+                            series2.getData().add(d);
+                        else
+                            series1.getData().add(d);
+                    }
+                       
+                }
+                
+                // update unselected players to scatter chart
+                
+                data.get(0).getData().clear();
+                for(XYChart.Data<Number,Number> d: series1.getData()){
+                    XYChart.Data<Number, Number> new_data = new XYChart.Data<Number, Number>(d.getXValue(),d.getYValue());
+                    new_data.setExtraValue(d.getExtraValue());
+                    data.get(0).getData().add(new_data);
+                }
+                
+                // update selected players to scatter chart and observable list
+                data.get(1).getData().clear();
+//                config.GlobalVariable.SELECTED_PLAYER.clear();
+                config.GlobalVariable.SELECTED_PLAYER_ITEM.clear();
+                for(XYChart.Data<Number,Number> d: series2.getData()){
+                    XYChart.Data<Number, Number> new_data = new XYChart.Data<Number, Number>(d.getXValue(),d.getYValue());
+                    new_data.setExtraValue(d.getExtraValue());
+                    data.get(1).getData().add(new_data);
+                    System.out.println(((ScatterChartExtraData)d.getExtraValue()).getName());
+                    System.out.println(((ScatterChartExtraData)d.getExtraValue()).getTeam_id());
+                    System.out.println(((ScatterChartExtraData)d.getExtraValue()).getPlayer_id());
+                    if(series2.getData().indexOf(d) == series2.getData().size()-1)
+                        config.GlobalVariable.NEED_UPDATE = true;
+//                    config.GlobalVariable.SELECTED_PLAYER.add(((ScatterChartExtraData)d.getExtraValue()).getPlayer());
+                    config.GlobalVariable.SELECTED_PLAYER_ITEM.add(((ScatterChartExtraData)d.getExtraValue()).getPlayerItem());
+                }
+                
+                for(PlayerItem p : config.GlobalVariable.SELECTED_PLAYER_ITEM){
+                    System.out.println("selectd players: " + p.getPlayer_name());
+                }
+                
+                
+//                System.out.println("selected size: " + config.GlobalVariable.SELECTED_PLAYER.size());
+//                
+//                for(Player p:config.GlobalVariable.SELECTED_PLAYER){
+//                    System.out.println(p.getName());
+//                }
+                
+//		xAxis.setAutoRanging( false );
+//		yAxis.setAutoRanging( false );
+//		if ( zoomAnimated.get() ) {
+//			zoomAnimation.stop();
+//			zoomAnimation.getKeyFrames().setAll(
+//					new KeyFrame( Duration.ZERO,
+//					              new KeyValue( xAxis.lowerBoundProperty(), xAxis.getLowerBound() ),
+//					              new KeyValue( xAxis.upperBoundProperty(), xAxis.getUpperBound() ),
+//					              new KeyValue( yAxis.lowerBoundProperty(), yAxis.getLowerBound() ),
+//					              new KeyValue( yAxis.upperBoundProperty(), yAxis.getUpperBound() )
+//					),
+//			    new KeyFrame( Duration.millis( zoomDurationMillis.get() ),
+//			                  new KeyValue( xAxis.lowerBoundProperty(), zoomWindow.getMinX() ),
+//			                  new KeyValue( xAxis.upperBoundProperty(), zoomWindow.getMaxX() ),
+//			                  new KeyValue( yAxis.lowerBoundProperty(), zoomWindow.getMinY() ),
+//			                  new KeyValue( yAxis.upperBoundProperty(), zoomWindow.getMaxY() )
+//			    )
+//			);
+//			zoomAnimation.play();
+//		} else {
+//			zoomAnimation.stop();
+//			xAxis.setLowerBound( zoomWindow.getMinX() );
+//			xAxis.setUpperBound( zoomWindow.getMaxX() );
+//			yAxis.setLowerBound( zoomWindow.getMinY() );
+//			yAxis.setUpperBound( zoomWindow.getMaxY() );
+//		}
+                this.printSelectedZone();
+//		selecting.set( false );
 	}
 
 	private static double getBalance( double val, double min, double max ) {

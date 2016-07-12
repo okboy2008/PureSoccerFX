@@ -120,7 +120,7 @@
               <items>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                      <children>
-                        <TableView layoutX="40.0" layoutY="1.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <TableView fx:id="playerListTable" layoutX="40.0" layoutY="1.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <columns>
                             <TableColumn prefWidth="75.0" text="C1" />
                             <TableColumn prefWidth="75.0" text="C2" />
@@ -159,7 +159,7 @@
                                     </AnchorPane>
                                  </children>
                               </VBox>
-                              <ScatterChart fx:id="scatterPlot01" GridPane.rowIndex="1">
+                              <ScatterChart fx:id="scatterPlot01" legendVisible="false" GridPane.rowIndex="1">
                                 <xAxis>
                                   <NumberAxis side="BOTTOM" />
                                 </xAxis>
@@ -167,7 +167,7 @@
                                   <NumberAxis side="LEFT" />
                                 </yAxis>
                               </ScatterChart>
-                              <ScatterChart fx:id="scatterPlot02" layoutX="10.0" layoutY="163.0" GridPane.rowIndex="2">
+                              <ScatterChart fx:id="scatterPlot02" layoutX="10.0" layoutY="163.0" legendVisible="false" GridPane.rowIndex="2">
                                  <xAxis>
                                     <NumberAxis side="BOTTOM" />
                                  </xAxis>
@@ -175,7 +175,7 @@
                                     <NumberAxis side="LEFT" />
                                  </yAxis>
                               </ScatterChart>
-                              <ScatterChart fx:id="scatterPlot12" layoutX="10.0" layoutY="315.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                              <ScatterChart fx:id="scatterPlot12" layoutX="10.0" layoutY="315.0" legendVisible="false" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                  <xAxis>
                                     <NumberAxis side="BOTTOM" />
                                  </xAxis>
@@ -192,7 +192,7 @@
                                     </AnchorPane>
                                  </children>
                               </VBox>
-                              <ScatterChart fx:id="scatterPlot10" layoutX="10.0" layoutY="163.0" GridPane.columnIndex="1">
+                              <ScatterChart fx:id="scatterPlot10" layoutX="10.0" layoutY="163.0" legendVisible="false" GridPane.columnIndex="1">
                                  <xAxis>
                                     <NumberAxis side="BOTTOM" />
                                  </xAxis>
@@ -200,7 +200,7 @@
                                     <NumberAxis side="LEFT" />
                                  </yAxis>
                               </ScatterChart>
-                              <ScatterChart fx:id="scatterPlot20" layoutX="221.0" layoutY="10.0" GridPane.columnIndex="2">
+                              <ScatterChart fx:id="scatterPlot20" layoutX="221.0" layoutY="10.0" legendVisible="false" GridPane.columnIndex="2">
                                  <xAxis>
                                     <NumberAxis side="BOTTOM" />
                                  </xAxis>
@@ -208,7 +208,7 @@
                                     <NumberAxis side="LEFT" />
                                  </yAxis>
                               </ScatterChart>
-                              <ScatterChart fx:id="scatterPlot21" layoutX="431.0" layoutY="10.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                              <ScatterChart fx:id="scatterPlot21" layoutX="431.0" layoutY="10.0" legendVisible="false" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                  <xAxis>
                                     <NumberAxis side="BOTTOM" />
                                  </xAxis>

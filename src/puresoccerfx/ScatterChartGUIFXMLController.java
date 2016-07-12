@@ -62,7 +62,13 @@ public class ScatterChartGUIFXMLController implements Initializable {
 //        scatterChart.getData().add(series1);
         
         ChartZoomManager zoomManager = new ChartZoomManager( chartPane, selectRect, scatterChart );
+        ScatterChartExtraData extra = (ScatterChartExtraData)config.GlobalVariable.CLICKEDCHARTDATA.get(0).getData().get(0).getExtraValue();
+        zoomManager.setX(extra.getX());
+        zoomManager.setY(extra.getY());
+        zoomManager.setData(data);
         zoomManager.start();
+        
+        
     }    
     
      private void addTooltipToChart(ScatterChart<Number,Number> chart){

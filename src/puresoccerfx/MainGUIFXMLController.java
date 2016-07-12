@@ -21,7 +21,10 @@ import java.text.DecimalFormat;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -38,6 +41,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -46,6 +50,8 @@ import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import org.controlsfx.control.PropertySheet.Item;
 import puresoccerfx.model.PlayerStatistic;
 import puresoccerfx.model.ScatterChartExtraData;
 
@@ -61,6 +67,8 @@ public class MainGUIFXMLController implements Initializable {
     private TreeView<PlayerItem> PlayerTreeView;
     @FXML
     private TableView<PlayerItem> PlayerSearchTable;
+    @FXML
+    private TableView<PlayerItem> playerListTable;
     @FXML
     private Label StatusBarLabel;
     @FXML
@@ -98,12 +106,17 @@ public class MainGUIFXMLController implements Initializable {
     
     // SearchTable observableList
     private ObservableList<PlayerItem> table_list = FXCollections.observableArrayList();
+    
+    // Scatter chart
     private ObservableList<XYChart.Series<Number,Number>> chart01 = FXCollections.observableArrayList();
     private ObservableList<XYChart.Series<Number,Number>> chart02 = FXCollections.observableArrayList();
     private ObservableList<XYChart.Series<Number,Number>> chart12 = FXCollections.observableArrayList();
     private ObservableList<XYChart.Series<Number,Number>> chart10 = FXCollections.observableArrayList();
     private ObservableList<XYChart.Series<Number,Number>> chart20 = FXCollections.observableArrayList();
     private ObservableList<XYChart.Series<Number,Number>> chart21 = FXCollections.observableArrayList();
+    
+    // filter and selection level of player list
+    
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -117,6 +130,7 @@ public class MainGUIFXMLController implements Initializable {
         this.initAttributeComboBox(combo1,0);
         this.initAttributeComboBox(combo2,1);
         this.initAttributeComboBox(combo3,2);
+        this.initPlayerListTable();
         //this.updateAllScatterPlot();
         this.disableStage();
     }
@@ -140,6 +154,7 @@ public class MainGUIFXMLController implements Initializable {
         //PlayerStatistic psX = config.GlobalVariable.MAPNAMETOSTATS.get(X);
         //PlayerStatistic psY = config.GlobalVariable.MAPNAMETOSTATS.get(Y);
         XYChart.Series series1 = new XYChart.Series();
+        XYChart.Series series2 = new XYChart.Series();
         // all players
         for(Team team:config.GlobalVariable.TEAMS){
             for(Player p:team.getPlayers()){
@@ -154,12 +169,30 @@ public class MainGUIFXMLController implements Initializable {
                 
                 extra_data.setName(p.getName());
                 extra_data.setPlayer_id(team.getPlayers().indexOf(p));
-                extra_data.setPlayer_id(config.GlobalVariable.TEAMS.indexOf(team));
+                extra_data.setTeam_id(config.GlobalVariable.TEAMS.indexOf(team));
                 extra_data.setX(X);
                 extra_data.setY(Y);
                 new_data.setExtraValue(extra_data);
 //                new_data.setExtraValue(p.getName());
-                series1.getData().add(new_data);
+                // check whether player is selected
+//                if (config.GlobalVariable.SELECTED_PLAYER.size() != config.GlobalVariable.FILTERED_PLAYER.size()) {
+                if (config.GlobalVariable.SELECTED_PLAYER_ITEM.size() != config.GlobalVariable.FILTERED_PLAYER_ITEM.size()) {
+                    boolean player_found = false;
+//                    for (Player pc : config.GlobalVariable.SELECTED_PLAYER) {
+                    for (PlayerItem pc : config.GlobalVariable.SELECTED_PLAYER_ITEM) {
+                        if (pc.getPlayer().equals(p)) {
+                            player_found = true;
+                            break;
+                        }
+                    }
+                    if (player_found) {
+                        series2.getData().add(new_data);
+                    } else {
+                        series1.getData().add(new_data);
+                    }
+                } else {
+                    series1.getData().add(new_data);
+                }
 
             }
         }
@@ -169,6 +202,7 @@ public class MainGUIFXMLController implements Initializable {
         NumberAxis YAxis = new NumberAxis(0, Y_max, Y_max/5);
         
         chart.add(series1);
+        chart.add(series2);
         sc.setData(chart);
         this.addTooltipToChart(sc);
         sc.setOnMouseClicked(e -> {
@@ -205,6 +239,7 @@ public class MainGUIFXMLController implements Initializable {
         //PlayerStatistic psX = config.GlobalVariable.MAPNAMETOSTATS.get(X);
         //PlayerStatistic psY = config.GlobalVariable.MAPNAMETOSTATS.get(Y);
         XYChart.Series series1 = new XYChart.Series();
+        XYChart.Series series2 = new XYChart.Series();
         // all players
         for(Team team:config.GlobalVariable.TEAMS){
             for(Player p:team.getPlayers()){
@@ -221,12 +256,45 @@ public class MainGUIFXMLController implements Initializable {
                 
                 extra_data.setName(p.getName());
                 extra_data.setPlayer_id(team.getPlayers().indexOf(p));
-                extra_data.setPlayer_id(config.GlobalVariable.TEAMS.indexOf(team));
+                extra_data.setTeam_id(config.GlobalVariable.TEAMS.indexOf(team));
                 extra_data.setX(X);
                 extra_data.setY(Y);
                 new_data.setExtraValue(extra_data);
 //                new_data.setExtraValue(p.getName());
-                series1.getData().add(new_data);
+                // check whether player is selected
+//                if (config.GlobalVariable.SELECTED_PLAYER.size() != config.GlobalVariable.FILTERED_PLAYER.size()) {
+//                    boolean player_found = false;
+//                    for (Player pc : config.GlobalVariable.SELECTED_PLAYER) {
+//                        if (pc.isEqual(p)) {
+//                            player_found = true;
+//                            break;
+//                        }
+//                    }
+//                    if (player_found) {
+//                        series2.getData().add(new_data);
+//                    } else {
+//                        series1.getData().add(new_data);
+//                    }
+//                } else {
+//                    series1.getData().add(new_data);
+//                }
+                if (config.GlobalVariable.SELECTED_PLAYER_ITEM.size() != config.GlobalVariable.FILTERED_PLAYER_ITEM.size()) {
+                    boolean player_found = false;
+//                    for (Player pc : config.GlobalVariable.SELECTED_PLAYER) {
+                    for (PlayerItem pc : config.GlobalVariable.SELECTED_PLAYER_ITEM) {
+                        if (pc.getPlayer().equals(p)) {
+                            player_found = true;
+                            break;
+                        }
+                    }
+                    if (player_found) {
+                        series2.getData().add(new_data);
+                    } else {
+                        series1.getData().add(new_data);
+                    }
+                } else {
+                    series1.getData().add(new_data);
+                }
             }
         }
         
@@ -235,6 +303,7 @@ public class MainGUIFXMLController implements Initializable {
         NumberAxis YAxis = new NumberAxis(0, Y_max, Y_max/5);
         
         chart.add(series1);
+        chart.add(series2);
         sc.setData(chart);
         this.addTooltipToChart(sc);
         sc.setOnMouseClicked(e -> {
@@ -253,6 +322,67 @@ public class MainGUIFXMLController implements Initializable {
     private void initGlobalVariables(){
         config.GlobalVariable.M_STATISTIC = this.statisticsMenu;
         config.GlobalVariable.M_CUSTOMIZED = this.customizedAttributeMenu;
+        config.GlobalVariable.FILTERED_PLAYER_ITEM.addListener(new ListChangeListener(){
+ 
+            @Override
+            public void onChanged(ListChangeListener.Change c) {
+               // System.out.println("\nFiltered list onChanged()");
+                  
+//                while(c.next()){
+//                    System.out.println("next: ");
+//                    if(c.wasAdded()){
+//                        System.out.println("- wasAdded");
+//                    }
+//                    if(c.wasPermutated()){
+//                        System.out.println("- wasPermutated");
+//                    }
+//                    if(c.wasRemoved()){
+//                        System.out.println("- wasRemoved");
+//                    }
+//                    if(c.wasReplaced()){
+//                        System.out.println("- wasReplaced");
+//                    }
+//                    if(c.wasUpdated()){
+//                        System.out.println("- wasUpdated");
+//                    }
+//                }
+                 
+                 
+            }
+        });
+        
+        config.GlobalVariable.SELECTED_PLAYER_ITEM.addListener(new ListChangeListener(){
+ 
+            @Override
+            public void onChanged(ListChangeListener.Change c) {
+                //System.out.println("\nSelected list onChanged()");
+                  if(config.GlobalVariable.NEED_UPDATE){
+                     System.out.println("update all scatter charts");
+                    updateAllScatterPlot();
+                    config.GlobalVariable.NEED_UPDATE = false;
+                 }
+//                while(c.next()){
+//                    System.out.println("next: ");
+//                    if(c.wasAdded()){
+//                        System.out.println("- wasAdded");
+//                    }
+//                    if(c.wasPermutated()){
+//                        System.out.println("- wasPermutated");
+//                    }
+//                    if(c.wasRemoved()){
+//                        System.out.println("- wasRemoved");
+//                    }
+//                    if(c.wasReplaced()){
+//                        System.out.println("- wasReplaced");
+//                    }
+//                    if(c.wasUpdated()){
+//                        System.out.println("- wasUpdated");
+//                    }
+//                }
+                 
+            }
+        });
+ 
     }
     
     private void loadingProjectData(){
@@ -363,6 +493,42 @@ public class MainGUIFXMLController implements Initializable {
                         System.out.println(newValue.getTeamName()+", "+newValue.getPlayerName());
                     }
                 });
+    }
+    
+    
+    // this table view is only for selected players
+    private void initPlayerListTable(){
+        this.playerListTable.getColumns().clear();
+        // column Player, Team
+        TableColumn<PlayerItem, String> player_column = new TableColumn<>("Player");
+        player_column.setCellValueFactory(new PropertyValueFactory<>("player_name"));
+        TableColumn<PlayerItem, String> team_column = new TableColumn<>("Team");
+        team_column.setCellValueFactory(new PropertyValueFactory<>("team_name"));
+        this.playerListTable.getColumns().add(player_column);
+        this.playerListTable.getColumns().add(team_column);
+        // add columns from attribute
+        for(String s:config.GlobalVariable.PLAYERATTRIBUTE){
+            TableColumn<PlayerItem, String> column = new TableColumn<>(s);
+            column.setCellValueFactory(new Callback<CellDataFeatures<PlayerItem, String>, ObservableValue<String>>(){
+                @Override
+                public ObservableValue<String> call(CellDataFeatures<PlayerItem, String> param) {
+//                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                      return new ReadOnlyObjectWrapper(String.valueOf(param.getValue().getPlayer().getStatisticByName(s)));
+                }
+                
+            
+            });
+            this.playerListTable.getColumns().add(column);
+        }
+        this.playerListTable.setItems(config.GlobalVariable.SELECTED_PLAYER_ITEM);
+    }
+    
+    private void updatePlayerListTable(){
+        for(PlayerItem p:config.GlobalVariable.SELECTED_PLAYER_ITEM){
+            for(TableColumn<PlayerItem, ?> column : this.playerListTable.getColumns()){
+//                column.
+            }
+        }
     }
     
     public void searchPlayer(){
@@ -517,6 +683,17 @@ public class MainGUIFXMLController implements Initializable {
     private void loadDataFromFile(File file){
         LoadCSVdata csv = new LoadCSVdata(file);
         config.GlobalVariable.TEAMS = csv.getTeamList();
+        for(Team t:config.GlobalVariable.TEAMS){
+            for(Player p : t.getPlayers()){
+                PlayerItem new_player = new PlayerItem();
+                new_player.setTeamId(config.GlobalVariable.TEAMS.indexOf(t));
+                new_player.setPlayerId(t.getPlayers().indexOf(p));
+                config.GlobalVariable.FILTERED_PLAYER_ITEM.add(new_player);
+                config.GlobalVariable.SELECTED_PLAYER_ITEM.add(new_player);
+                config.GlobalVariable.FILTERED_PLAYER.add(p);
+                config.GlobalVariable.SELECTED_PLAYER.add(p);
+            }
+        }
     }
     
     private void updatePlayerTreeView(){

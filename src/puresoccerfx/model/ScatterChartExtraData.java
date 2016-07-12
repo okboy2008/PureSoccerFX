@@ -67,5 +67,15 @@ public class ScatterChartExtraData {
         this.Y = Y;
     }
     
+    public Player getPlayer(){
+        return config.GlobalVariable.TEAMS.get(team_id).getPlayerByIndex(player_id);
+    }
+    
+    public PlayerItem getPlayerItem(){
+        PlayerItem item = new PlayerItem();
+        item.setTeamId(team_id);
+        item.setPlayerId(player_id);
+        return item;
+    }
     
 }
