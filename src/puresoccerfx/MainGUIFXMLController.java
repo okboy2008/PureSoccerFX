@@ -21,6 +21,7 @@ import java.text.DecimalFormat;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -48,10 +49,14 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.controlsfx.control.PropertySheet.Item;
+import org.gillius.jfxutils.chart.ChartZoomManager;
 import puresoccerfx.model.PlayerStatistic;
 import puresoccerfx.model.ScatterChartExtraData;
 
@@ -91,29 +96,66 @@ public class MainGUIFXMLController implements Initializable {
     private ComboBox<String> combo3;
     @FXML 
     private ScatterChart<Number,Number> scatterPlot01;
+    @FXML
+    private Rectangle selectRect01;
+    @FXML
+    private StackPane chartPane01;
+    
+    private ChartZoomManager cm01;
     @FXML 
     private ScatterChart<Number,Number> scatterPlot02;
+    @FXML
+    private Rectangle selectRect02;
+    @FXML
+    private StackPane chartPane02;
+    
+    private ChartZoomManager cm02;
     @FXML 
     private ScatterChart<Number,Number> scatterPlot12;
+    @FXML
+    private Rectangle selectRect12;
+    @FXML
+    private StackPane chartPane12;
+    
+    private ChartZoomManager cm12;
     @FXML 
     private ScatterChart<Number,Number> scatterPlot10;
+    @FXML
+    private Rectangle selectRect10;
+    @FXML
+    private StackPane chartPane10;
+    
+    private ChartZoomManager cm10;
     @FXML 
     private ScatterChart<Number,Number> scatterPlot20;
+    @FXML
+    private Rectangle selectRect20;
+    @FXML
+    private StackPane chartPane20;
+    
+    private ChartZoomManager cm20;
     @FXML 
     private ScatterChart<Number,Number> scatterPlot21;
+    @FXML
+    private Rectangle selectRect21;
+    @FXML
+    private StackPane chartPane21;
     
-    private double SCALE_DELTA = 1.1;
+    private ChartZoomManager cm21;
+    
+    
+//    private double SCALE_DELTA = 1.1;
     
     // SearchTable observableList
     private ObservableList<PlayerItem> table_list = FXCollections.observableArrayList();
     
     // Scatter chart
-    private ObservableList<XYChart.Series<Number,Number>> chart01 = FXCollections.observableArrayList();
-    private ObservableList<XYChart.Series<Number,Number>> chart02 = FXCollections.observableArrayList();
-    private ObservableList<XYChart.Series<Number,Number>> chart12 = FXCollections.observableArrayList();
-    private ObservableList<XYChart.Series<Number,Number>> chart10 = FXCollections.observableArrayList();
-    private ObservableList<XYChart.Series<Number,Number>> chart20 = FXCollections.observableArrayList();
-    private ObservableList<XYChart.Series<Number,Number>> chart21 = FXCollections.observableArrayList();
+//    private ObservableList<XYChart.Series<Number,Number>> chart01 = FXCollections.observableArrayList();
+//    private ObservableList<XYChart.Series<Number,Number>> chart02 = FXCollections.observableArrayList();
+//    private ObservableList<XYChart.Series<Number,Number>> chart12 = FXCollections.observableArrayList();
+//    private ObservableList<XYChart.Series<Number,Number>> chart10 = FXCollections.observableArrayList();
+//    private ObservableList<XYChart.Series<Number,Number>> chart20 = FXCollections.observableArrayList();
+//    private ObservableList<XYChart.Series<Number,Number>> chart21 = FXCollections.observableArrayList();
     
     // filter and selection level of player list
     
@@ -135,14 +177,80 @@ public class MainGUIFXMLController implements Initializable {
         this.disableStage();
     }
     
-    private void updateAllScatterPlot(){
+    private void initAllChartManager(){
+//        this.setChartManager(cm01, chartPane01, selectRect01, scatterPlot01);
+//        this.setChartManager(cm02, chartPane02, selectRect02, scatterPlot02);
+//        this.setChartManager(cm12, chartPane12, selectRect12, scatterPlot12);
+        cm01 = new ChartZoomManager(chartPane01, selectRect01, scatterPlot01);
+        
+        cm01.start();
+        cm02 = new ChartZoomManager(chartPane02, selectRect02, scatterPlot02);
+        
+        cm02.start();
+        cm12 = new ChartZoomManager(chartPane12, selectRect12, scatterPlot12);
+        
+        cm12.start();
+        
+        cm10 = new ChartZoomManager(chartPane10, selectRect10, scatterPlot10);
+        
+        cm10.start();
+        cm20 = new ChartZoomManager(chartPane20, selectRect20, scatterPlot20);
+        
+        cm20.start();
+        cm21 = new ChartZoomManager(chartPane21, selectRect21, scatterPlot21);
+        
+        cm21.start();
+        this.resetManagerData();
+    }
+    
+    private void resetManagerData(){
+        cm01.setData(scatterPlot01.getData());
+        cm01.setX(combo1.getSelectionModel().getSelectedItem());
+        cm01.setY(combo2.getSelectionModel().getSelectedItem());
+        cm02.setData(scatterPlot02.getData());
+        cm02.setX(combo1.getSelectionModel().getSelectedItem());
+        cm02.setY(combo3.getSelectionModel().getSelectedItem());
+        cm12.setData(scatterPlot12.getData());
+        cm12.setX(combo2.getSelectionModel().getSelectedItem());
+        cm12.setY(combo3.getSelectionModel().getSelectedItem());
+        
+        cm10.setData(scatterPlot10.getData());
+        cm10.setX(config.DataSetConfig.AVG_PREFIX+combo2.getSelectionModel().getSelectedItem());
+        cm10.setY(config.DataSetConfig.AVG_PREFIX+combo1.getSelectionModel().getSelectedItem());
+        cm20.setData(scatterPlot20.getData());
+        cm20.setX(config.DataSetConfig.AVG_PREFIX+combo3.getSelectionModel().getSelectedItem());
+        cm20.setY(config.DataSetConfig.AVG_PREFIX+combo1.getSelectionModel().getSelectedItem());
+        cm21.setData(scatterPlot21.getData());
+        cm21.setX(config.DataSetConfig.AVG_PREFIX+combo3.getSelectionModel().getSelectedItem());
+        cm21.setY(config.DataSetConfig.AVG_PREFIX+combo2.getSelectionModel().getSelectedItem());
+    }
+    
+    private void initAllScatterPlot(){
         this.updateScatterPlot(scatterPlot01, combo1.getSelectionModel().getSelectedItem(), combo2.getSelectionModel().getSelectedItem());
+        
         this.updateScatterPlot(scatterPlot02, combo1.getSelectionModel().getSelectedItem(), combo3.getSelectionModel().getSelectedItem());
+        
         this.updateScatterPlot(scatterPlot12, combo2.getSelectionModel().getSelectedItem(), combo3.getSelectionModel().getSelectedItem());
+        
         
         this.updateAvgScatterPlot(scatterPlot10, combo2.getSelectionModel().getSelectedItem(), combo1.getSelectionModel().getSelectedItem());
         this.updateAvgScatterPlot(scatterPlot20, combo3.getSelectionModel().getSelectedItem(), combo1.getSelectionModel().getSelectedItem());
         this.updateAvgScatterPlot(scatterPlot21, combo3.getSelectionModel().getSelectedItem(), combo2.getSelectionModel().getSelectedItem());
+    }
+    
+    private void updateAllScatterPlot(){
+        this.updateScatterPlot(scatterPlot01, combo1.getSelectionModel().getSelectedItem(), combo2.getSelectionModel().getSelectedItem());
+        
+        this.updateScatterPlot(scatterPlot02, combo1.getSelectionModel().getSelectedItem(), combo3.getSelectionModel().getSelectedItem());
+        
+        this.updateScatterPlot(scatterPlot12, combo2.getSelectionModel().getSelectedItem(), combo3.getSelectionModel().getSelectedItem());
+        
+        
+        this.updateAvgScatterPlot(scatterPlot10, combo2.getSelectionModel().getSelectedItem(), combo1.getSelectionModel().getSelectedItem());
+        this.updateAvgScatterPlot(scatterPlot20, combo3.getSelectionModel().getSelectedItem(), combo1.getSelectionModel().getSelectedItem());
+        this.updateAvgScatterPlot(scatterPlot21, combo3.getSelectionModel().getSelectedItem(), combo2.getSelectionModel().getSelectedItem());
+        
+        resetManagerData();
     }
     
     private void updateAvgScatterPlot(ScatterChart<Number,Number> sc, String X, String Y){
@@ -205,14 +313,14 @@ public class MainGUIFXMLController implements Initializable {
         chart.add(series2);
         sc.setData(chart);
         this.addTooltipToChart(sc);
-        sc.setOnMouseClicked(e -> {
-            config.GlobalVariable.CLICKEDCHARTDATA = sc.getData();
-            //sc.getTitle();
-            //sc.getData();
-            this.openFXMLWindow("/puresoccerfx/view/ScatterChartGUIFXML.fxml", X + " - " + Y + " Scatter Chart");
-//            sc.getData().clear();
-//            sc.getData().add(series1);
-        });
+//        sc.setOnMouseClicked(e -> {
+//            config.GlobalVariable.CLICKEDCHARTDATA = sc.getData();
+//            //sc.getTitle();
+//            //sc.getData();
+//            this.openFXMLWindow("/puresoccerfx/view/ScatterChartGUIFXML.fxml", X + " - " + Y + " Scatter Chart");
+////            sc.getData().clear();
+////            sc.getData().add(series1);
+//        });
         
       
 
@@ -221,6 +329,39 @@ public class MainGUIFXMLController implements Initializable {
     private void addTooltipToChart(ScatterChart<Number,Number> chart){
         for (XYChart.Series<Number, Number> s : chart.getData()) {
             for (XYChart.Data<Number, Number> d : s.getData()) {
+                
+                d.getNode().setOnMouseEntered(e -> {
+                    int index = -1;
+                    for(PlayerItem p: this.playerListTable.getItems()){
+//                        index = -1;
+                        if(((ScatterChartExtraData)d.getExtraValue()).isSamePlayer(p)){
+                            index = this.playerListTable.getItems().indexOf(p);
+                            break;
+                        } 
+                    }
+                    final int in = index;
+//                    for(index; ; index++){
+//                        if(this.playerListTable.getColumns().get(0).getequals({
+//                            
+//                        }
+//                    }
+                    System.out.println("enter "+in + " "+((ScatterChartExtraData)d.getExtraValue()).getName());
+//                    this.playerListTable.getSelectionModel().select(((ScatterChartExtraData)d.getExtraValue()).getPlayerItem());
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            playerListTable.requestFocus();
+                            playerListTable.scrollTo(in);
+                            playerListTable.getSelectionModel().select(in);
+                          
+                            playerListTable.getSelectionModel().focus(in);
+                            
+//                            playerListTable.getFocusModel().focus(in);
+                        }
+                    });
+//                    this.playerListTable.getSelectionModel().se
+                    
+                });
                 // System.out.println(d.getNode() == null);
                 DecimalFormat f = new DecimalFormat("#.##");
                 Tooltip.install(d.getNode(), new Tooltip(((ScatterChartExtraData)d.getExtraValue()).getName() + "\n"
@@ -304,19 +445,32 @@ public class MainGUIFXMLController implements Initializable {
         
         chart.add(series1);
         chart.add(series2);
+     
         sc.setData(chart);
         this.addTooltipToChart(sc);
-        sc.setOnMouseClicked(e -> {
-         
-//            config.GlobalVariable.CLICKEDSCATTERCHART = new ScatterChart<>(xAxis, YAxis, sc.getData());
-            config.GlobalVariable.CLICKEDCHARTDATA = sc.getData();
-            // config.GlobalVariable.CLICKEDSCATTERCHART.add(series);
-            this.openFXMLWindow("/puresoccerfx/view/ScatterChartGUIFXML.fxml", X + " - " + Y + " Scatter Chart");
-//            this.updateScatterPlot(sc, X, Y);
-//            sc.getData().clear();
-//            sc.getData().add(series1);
-        });
+        
+//        sc.setOnMouseClicked(e -> {
+//         
+////            config.GlobalVariable.CLICKEDSCATTERCHART = new ScatterChart<>(xAxis, YAxis, sc.getData());
+//            config.GlobalVariable.CLICKEDCHARTDATA = sc.getData();
+//            // config.GlobalVariable.CLICKEDSCATTERCHART.add(series);
+//            this.openFXMLWindow("/puresoccerfx/view/ScatterChartGUIFXML.fxml", X + " - " + Y + " Scatter Chart");
+////            this.updateScatterPlot(sc, X, Y);
+////            sc.getData().clear();
+////            sc.getData().add(series1);
+//        });
 
+    }
+    
+    private void setChartManager(ChartZoomManager cm, Pane chartPane, Rectangle selectRect, ScatterChart<Number,Number> sc){
+        // set chart manager
+//        ChartZoomManager zoomManager = new ChartZoomManager( chartPane, selectRect, sc );
+        cm = new ChartZoomManager(chartPane, selectRect, sc);
+//        ScatterChartExtraData extra = (ScatterChartExtraData)sc.getData().get(0).getData().get(0).getExtraValue();
+//        cm.setX(extra.getX());
+//        cm.setY(extra.getY());
+//        cm.setData(sc.getData());
+        cm.start();
     }
     
     private void initGlobalVariables(){
@@ -658,7 +812,8 @@ public class MainGUIFXMLController implements Initializable {
             // System.out.println(config.GlobalVariable.TEAMS.size());
             this.updatePlayerTreeView();
             this.searchPlayer();
-            this.updateAllScatterPlot();
+            this.initAllScatterPlot();
+            this.initAllChartManager();
         }
     }
 

@@ -8,6 +8,7 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 
 <AnchorPane id="AnchorPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="puresoccerfx.MainGUIFXMLController">
     <children>
@@ -91,7 +92,7 @@
                      <children>
                         <TabPane prefHeight="341.0" prefWidth="158.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <tabs>
-                            <Tab text="Untitled Tab 1">
+                            <Tab text="Filters">
                               <content>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                               </content>
@@ -159,30 +160,45 @@
                                     </AnchorPane>
                                  </children>
                               </VBox>
-                              <ScatterChart fx:id="scatterPlot01" legendVisible="false" GridPane.rowIndex="1">
-                                <xAxis>
-                                  <NumberAxis side="BOTTOM" />
-                                </xAxis>
-                                <yAxis>
-                                  <NumberAxis side="LEFT" />
-                                </yAxis>
-                              </ScatterChart>
-                              <ScatterChart fx:id="scatterPlot02" layoutX="10.0" layoutY="163.0" legendVisible="false" GridPane.rowIndex="2">
-                                 <xAxis>
-                                    <NumberAxis side="BOTTOM" />
-                                 </xAxis>
-                                 <yAxis>
-                                    <NumberAxis side="LEFT" />
-                                 </yAxis>
-                              </ScatterChart>
-                              <ScatterChart fx:id="scatterPlot12" layoutX="10.0" layoutY="315.0" legendVisible="false" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                 <xAxis>
-                                    <NumberAxis side="BOTTOM" />
-                                 </xAxis>
-                                 <yAxis>
-                                    <NumberAxis side="LEFT" />
-                                 </yAxis>
-                              </ScatterChart>
+                              <StackPane fx:id="chartPane01" GridPane.rowIndex="1">
+                                 <children>
+                                    <ScatterChart fx:id="scatterPlot01" legendVisible="false" GridPane.rowIndex="1">
+                                      <xAxis>
+                                        <NumberAxis side="BOTTOM" />
+                                      </xAxis>
+                                      <yAxis>
+                                        <NumberAxis side="LEFT" />
+                                      </yAxis>
+                                    </ScatterChart>
+                                    <Rectangle fx:id="selectRect01" fill="DODGERBLUE" height="0.0" mouseTransparent="true" opacity="0.3" stroke="#002966" strokeType="INSIDE" strokeWidth="3.0" width="0.0" x="0.0" y="0.0" StackPane.alignment="TOP_LEFT" />
+                                 </children>
+                              </StackPane>
+                              <StackPane fx:id="chartPane02" GridPane.rowIndex="2">
+                                 <children>
+                                    <ScatterChart fx:id="scatterPlot02" layoutX="10.0" layoutY="163.0" legendVisible="false" GridPane.rowIndex="2">
+                                       <xAxis>
+                                          <NumberAxis side="BOTTOM" />
+                                       </xAxis>
+                                       <yAxis>
+                                          <NumberAxis side="LEFT" />
+                                       </yAxis>
+                                    </ScatterChart>
+                                    <Rectangle fx:id="selectRect02" fill="DODGERBLUE" height="0.0" mouseTransparent="true" opacity="0.3" stroke="#002966" strokeType="INSIDE" strokeWidth="3.0" width="0.0" x="0.0" y="0.0" StackPane.alignment="TOP_LEFT" />
+                                 </children>
+                              </StackPane>
+                              <StackPane fx:id="chartPane12" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                 <children>
+                                    <ScatterChart fx:id="scatterPlot12" layoutX="10.0" layoutY="315.0" legendVisible="false" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                       <xAxis>
+                                          <NumberAxis side="BOTTOM" />
+                                       </xAxis>
+                                       <yAxis>
+                                          <NumberAxis side="LEFT" />
+                                       </yAxis>
+                                    </ScatterChart>
+                                    <Rectangle fx:id="selectRect12" fill="DODGERBLUE" height="0.0" mouseTransparent="true" opacity="0.3" stroke="#002966" strokeType="INSIDE" strokeWidth="3.0" width="0.0" x="0.0" y="0.0" StackPane.alignment="TOP_LEFT" />
+                                 </children>
+                              </StackPane>
                               <VBox layoutX="221.0" layoutY="163.0" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
                                  <children>
                                     <AnchorPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
@@ -192,30 +208,45 @@
                                     </AnchorPane>
                                  </children>
                               </VBox>
-                              <ScatterChart fx:id="scatterPlot10" layoutX="10.0" layoutY="163.0" legendVisible="false" GridPane.columnIndex="1">
-                                 <xAxis>
-                                    <NumberAxis side="BOTTOM" />
-                                 </xAxis>
-                                 <yAxis>
-                                    <NumberAxis side="LEFT" />
-                                 </yAxis>
-                              </ScatterChart>
-                              <ScatterChart fx:id="scatterPlot20" layoutX="221.0" layoutY="10.0" legendVisible="false" GridPane.columnIndex="2">
-                                 <xAxis>
-                                    <NumberAxis side="BOTTOM" />
-                                 </xAxis>
-                                 <yAxis>
-                                    <NumberAxis side="LEFT" />
-                                 </yAxis>
-                              </ScatterChart>
-                              <ScatterChart fx:id="scatterPlot21" layoutX="431.0" layoutY="10.0" legendVisible="false" GridPane.columnIndex="2" GridPane.rowIndex="1">
-                                 <xAxis>
-                                    <NumberAxis side="BOTTOM" />
-                                 </xAxis>
-                                 <yAxis>
-                                    <NumberAxis side="LEFT" />
-                                 </yAxis>
-                              </ScatterChart>
+                              <StackPane fx:id="chartPane10" GridPane.columnIndex="1">
+                                 <children>
+                                    <ScatterChart fx:id="scatterPlot10" layoutX="10.0" layoutY="163.0" legendVisible="false" GridPane.columnIndex="1">
+                                       <xAxis>
+                                          <NumberAxis side="BOTTOM" />
+                                       </xAxis>
+                                       <yAxis>
+                                          <NumberAxis side="LEFT" />
+                                       </yAxis>
+                                    </ScatterChart>
+                                    <Rectangle fx:id="selectRect10" fill="DODGERBLUE" height="0.0" mouseTransparent="true" opacity="0.3" stroke="#002966" strokeType="INSIDE" strokeWidth="3.0" width="0.0" x="0.0" y="0.0" StackPane.alignment="TOP_LEFT" />
+                                 </children>
+                              </StackPane>
+                              <StackPane fx:id="chartPane20" GridPane.columnIndex="2">
+                                 <children>
+                                    <ScatterChart fx:id="scatterPlot20" layoutX="221.0" layoutY="10.0" legendVisible="false" GridPane.columnIndex="2">
+                                       <xAxis>
+                                          <NumberAxis side="BOTTOM" />
+                                       </xAxis>
+                                       <yAxis>
+                                          <NumberAxis side="LEFT" />
+                                       </yAxis>
+                                    </ScatterChart>
+                                    <Rectangle fx:id="selectRect20" fill="DODGERBLUE" height="0.0" mouseTransparent="true" opacity="0.3" stroke="#002966" strokeType="INSIDE" strokeWidth="3.0" width="0.0" x="0.0" y="0.0" StackPane.alignment="TOP_LEFT" />
+                                 </children>
+                              </StackPane>
+                              <StackPane fx:id="chartPane21" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                 <children>
+                                    <ScatterChart fx:id="scatterPlot21" layoutX="431.0" layoutY="10.0" legendVisible="false" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                       <xAxis>
+                                          <NumberAxis side="BOTTOM" />
+                                       </xAxis>
+                                       <yAxis>
+                                          <NumberAxis side="LEFT" />
+                                       </yAxis>
+                                    </ScatterChart>
+                                    <Rectangle fx:id="selectRect21" fill="DODGERBLUE" height="0.0" mouseTransparent="true" opacity="0.3" stroke="#002966" strokeType="INSIDE" strokeWidth="3.0" width="0.0" x="0.0" y="0.0" StackPane.alignment="TOP_LEFT" />
+                                 </children>
+                              </StackPane>
                            </children>
                         </GridPane>
                      </children>
@@ -227,7 +258,17 @@
             <SplitPane fx:id="rightSplitPane" dividerPositions="0.7462462462462462" orientation="VERTICAL" prefHeight="668.0" prefWidth="382.0" BorderPane.alignment="CENTER">
               <items>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="493.0" prefWidth="380.0" />
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                     <children>
+                        <StackedBarChart layoutX="-10.0" layoutY="-137.0" legendVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <xAxis>
+                            <NumberAxis side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <CategoryAxis side="LEFT" />
+                          </yAxis>
+                        </StackedBarChart>
+                     </children></AnchorPane>
               </items>
             </SplitPane>
          </right>

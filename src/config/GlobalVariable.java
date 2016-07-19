@@ -15,6 +15,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Menu;
+import puresoccerfx.model.Filter;
 import puresoccerfx.model.PlayerItem;
 import puresoccerfx.model.PlayerStatistic;
 
@@ -53,6 +54,7 @@ public class GlobalVariable {
     public static double MAX_Y = -1.0;
     
     public static HashMap<String, PlayerStatistic> MAPNAMETOSTATS= new HashMap<>(); 
+    public static HashMap<String, Filter> MAPSCATTERTOFILTER = new HashMap<>();
     public static Menu M_STATISTIC;
     public static Menu M_CUSTOMIZED;
 }

@@ -78,4 +78,10 @@ public class ScatterChartExtraData {
         return item;
     }
     
+    public boolean isSamePlayer(PlayerItem p){
+        if(p.getTeamId() == this.team_id && p.getPlayerId() == this.player_id)
+            return true;
+        return false;
+    }
+    
 }

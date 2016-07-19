@@ -17,6 +17,7 @@
 package org.gillius.jfxutils.chart;
 
 import datatype.Player;
+import java.util.ArrayList;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -40,7 +41,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import org.gillius.jfxutils.EventHandlerManager;
+import puresoccerfx.model.Filter;
 import puresoccerfx.model.PlayerItem;
+import puresoccerfx.model.Range;
 import puresoccerfx.model.ScatterChartExtraData;
 
 /**
@@ -221,6 +224,41 @@ public class ChartZoomManager {
 		return axisConstraintStrategy;
 	}
 
+        public void getFilteredPlayers(){
+            
+            ArrayList<PlayerItem> tmp = new ArrayList<>();
+            for(PlayerItem p: config.GlobalVariable.FILTERED_PLAYER_ITEM){
+                boolean flag = true;
+                for(String s:config.GlobalVariable.MAPSCATTERTOFILTER.keySet()){
+                    Filter f = config.GlobalVariable.MAPSCATTERTOFILTER.get(s);
+                    if (s.contains(config.DataSetConfig.AVG_PREFIX)) {
+                        if (!f.isPlayerSatisfiedAVG(p.getPlayer())){
+                            flag = false;
+                            break;
+                        }
+                    } else if (!f.isPlayerSatisfied(p.getPlayer())) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if(flag){
+                    tmp.add(p);
+                }
+            }
+            if(tmp.isEmpty()){
+                config.GlobalVariable.NEED_UPDATE = true;
+                config.GlobalVariable.SELECTED_PLAYER_ITEM.clear();
+                return;
+            }
+            config.GlobalVariable.SELECTED_PLAYER_ITEM.clear();
+            for(PlayerItem p : tmp){
+                if(tmp.indexOf(p)==tmp.size()-1){
+                    config.GlobalVariable.NEED_UPDATE = true;
+                }
+                config.GlobalVariable.SELECTED_PLAYER_ITEM.add(p);
+            }
+        }
+        
 	/**
 	 * Sets the {@link AxisConstraintStrategy} to use for mouse drag events, which determines which axis is allowed for
 	 * zooming. The default implementation is {@link AxisConstraintStrategies#getIgnoreOutsideChart()}.
@@ -432,19 +470,48 @@ public class ChartZoomManager {
             System.out.println("height: "+ this.selectRect.getHeight());
         }
         
+        private void updateFilter(String X, String Y, double minx, double maxx, double miny, double maxy){
+            Filter f = config.GlobalVariable.MAPSCATTERTOFILTER.get(X+Y);
+            // new filter
+            if(f == null){
+                f = new Filter();
+                
+                // per appearance
+                if(X.startsWith(config.DataSetConfig.AVG_PREFIX)){
+                    String name = X.substring(1);
+                    f.setX(name);
+                    name = Y.substring(1);
+                    f.setY(name);
+                    
+                }else{
+                    f.setX(X);
+                    f.setY(Y);
+                }
+                f.getFilters().add(new Range(minx,maxx,miny,maxy));
+                config.GlobalVariable.MAPSCATTERTOFILTER.put(X+Y, f);
+                return;
+            }
+            f.getFilters().add(new Range(minx,maxx,miny,maxy));
+        }
+        
 	private void onMouseReleased() {
 		if ( !selecting.get() ){
+                    if(config.GlobalVariable.MAPSCATTERTOFILTER.get(X+Y) == null)
+                        return;
                     // reset selection
-                    if(config.GlobalVariable.SELECTED_PLAYER_ITEM.size()!=config.GlobalVariable.FILTERED_PLAYER_ITEM.size()){
-                        config.GlobalVariable.SELECTED_PLAYER_ITEM.clear();
-                        for(PlayerItem p:config.GlobalVariable.FILTERED_PLAYER_ITEM){
-                            if(config.GlobalVariable.FILTERED_PLAYER_ITEM.indexOf(p)== config.GlobalVariable.FILTERED_PLAYER_ITEM.size()-1){
-                                config.GlobalVariable.NEED_UPDATE = true;
-                                System.out.println("set update true in 1");
-                            }
-                            config.GlobalVariable.SELECTED_PLAYER_ITEM.add(p);
-                        }
-                    }
+                    config.GlobalVariable.MAPSCATTERTOFILTER.get(X+Y).getFilters().clear();
+//                    config.GlobalVariable.MAPSCATTERTOFILTER.get(Y).getFilters().clear();
+                    this.getFilteredPlayers();
+//                    if(config.GlobalVariable.SELECTED_PLAYER_ITEM.size()!=config.GlobalVariable.FILTERED_PLAYER_ITEM.size()){
+//                        config.GlobalVariable.SELECTED_PLAYER_ITEM.clear();
+//                        for(PlayerItem p:config.GlobalVariable.FILTERED_PLAYER_ITEM){
+//                            if(config.GlobalVariable.FILTERED_PLAYER_ITEM.indexOf(p)== config.GlobalVariable.FILTERED_PLAYER_ITEM.size()-1){
+//                                config.GlobalVariable.NEED_UPDATE = true;
+//                                System.out.println("set update true in 1");
+//                            }
+//                            config.GlobalVariable.SELECTED_PLAYER_ITEM.add(p);
+//                        }
+//                    }
 			return;
                 }
 
@@ -453,16 +520,11 @@ public class ChartZoomManager {
 				 selectRect.getHeight() == 0.0 ) {
 			selecting.set( false );
                         // reset here?
-                         if(config.GlobalVariable.SELECTED_PLAYER_ITEM.size()!=config.GlobalVariable.FILTERED_PLAYER_ITEM.size()){
-                        config.GlobalVariable.SELECTED_PLAYER_ITEM.clear();
-                        for(PlayerItem p:config.GlobalVariable.FILTERED_PLAYER_ITEM){
-                            if(config.GlobalVariable.FILTERED_PLAYER_ITEM.indexOf(p)== config.GlobalVariable.FILTERED_PLAYER_ITEM.size()-1){
-                                config.GlobalVariable.NEED_UPDATE = true;
-                                System.out.println("set update true in 2");
-                            }
-                            config.GlobalVariable.SELECTED_PLAYER_ITEM.add(p);
-                        }
-                    }
+                        if(config.GlobalVariable.MAPSCATTERTOFILTER.get(X+Y) == null)
+                            return;
+                        config.GlobalVariable.MAPSCATTERTOFILTER.get(X+Y).getFilters().clear();
+//                        config.GlobalVariable.MAPSCATTERTOFILTER.get(Y).getFilters().clear();
+                        this.getFilteredPlayers();
 			return;
 		}
 
@@ -498,81 +560,87 @@ public class ChartZoomManager {
                 
                 XYChart.Series<Number,Number> series2 = new XYChart.Series(); // selected players
                 
-                for(XYChart.Data<Number,Number> d:data.get(0).getData()){
-                    double x_count = d.getXValue().doubleValue();
-                    double y_count = d.getYValue().doubleValue();
-                    ScatterChartExtraData data = (ScatterChartExtraData)d.getExtraValue();
-                    if(x_count<config.GlobalVariable.MIN_X || x_count > config.GlobalVariable.MAX_X || y_count<config.GlobalVariable.MIN_Y || y_count>config.GlobalVariable.MAX_Y){
-                        series1.getData().add(d);
-                    }else{
-                        boolean found = false;
-                        for(PlayerItem p:config.GlobalVariable.SELECTED_PLAYER_ITEM){
-                            if(p.getPlayer().equals(data.getPlayer())){
-                                found = true;
-                                break;
-                            }
-                        }
-                        if(found)
-                            series2.getData().add(d);
-                        else
-                            series1.getData().add(d);
-                    }
-                }
-                
-                for(XYChart.Data<Number,Number> d:data.get(1).getData()){
-                    double x_count = d.getXValue().doubleValue();
-                    double y_count = d.getYValue().doubleValue();
-                    ScatterChartExtraData data = (ScatterChartExtraData)d.getExtraValue();
-                    if(x_count<config.GlobalVariable.MIN_X || x_count > config.GlobalVariable.MAX_X || y_count<config.GlobalVariable.MIN_Y || y_count>config.GlobalVariable.MAX_Y){
-                        series1.getData().add(d);
-                    }else{
-                        boolean found = false;
-//                        for(Player p:config.GlobalVariable.SELECTED_PLAYER){
-//                            if(p.isEqual(data.getPlayer())){
+                // update new filter , check for average
+                this.updateFilter(X, Y, zoomWindow.getMinX(), zoomWindow.getMaxX(), zoomWindow.getMinY(), zoomWindow.getMaxY());
+//                this.updateFilter(Y, zoomWindow.getMinY(), zoomWindow.getMaxY());
+                this.getFilteredPlayers();
+////////////////////////// old version ///////////////////////////////////////////////////////////////                
+//                for(XYChart.Data<Number,Number> d:data.get(0).getData()){
+//                    double x_count = d.getXValue().doubleValue();
+//                    double y_count = d.getYValue().doubleValue();
+//                    ScatterChartExtraData data = (ScatterChartExtraData)d.getExtraValue();
+//                    if(x_count<config.GlobalVariable.MIN_X || x_count > config.GlobalVariable.MAX_X || y_count<config.GlobalVariable.MIN_Y || y_count>config.GlobalVariable.MAX_Y){
+//                        series1.getData().add(d);
+//                    }else{
+//                        boolean found = false;
+//                        for(PlayerItem p:config.GlobalVariable.SELECTED_PLAYER_ITEM){
+//                            if(p.getPlayer().equals(data.getPlayer())){
 //                                found = true;
 //                                break;
 //                            }
 //                        }
-                        for(PlayerItem p : config.GlobalVariable.SELECTED_PLAYER_ITEM){
-                            if(p.getPlayer().equals(data.getPlayer())){
-                                found = true;
-                                break;
-                            }
-                        }
-                        if(found)
-                            series2.getData().add(d);
-                        else
-                            series1.getData().add(d);
-                    }
-                       
-                }
-                
-                // update unselected players to scatter chart
-                
-                data.get(0).getData().clear();
-                for(XYChart.Data<Number,Number> d: series1.getData()){
-                    XYChart.Data<Number, Number> new_data = new XYChart.Data<Number, Number>(d.getXValue(),d.getYValue());
-                    new_data.setExtraValue(d.getExtraValue());
-                    data.get(0).getData().add(new_data);
-                }
-                
-                // update selected players to scatter chart and observable list
-                data.get(1).getData().clear();
-//                config.GlobalVariable.SELECTED_PLAYER.clear();
-                config.GlobalVariable.SELECTED_PLAYER_ITEM.clear();
-                for(XYChart.Data<Number,Number> d: series2.getData()){
-                    XYChart.Data<Number, Number> new_data = new XYChart.Data<Number, Number>(d.getXValue(),d.getYValue());
-                    new_data.setExtraValue(d.getExtraValue());
-                    data.get(1).getData().add(new_data);
-                    System.out.println(((ScatterChartExtraData)d.getExtraValue()).getName());
-                    System.out.println(((ScatterChartExtraData)d.getExtraValue()).getTeam_id());
-                    System.out.println(((ScatterChartExtraData)d.getExtraValue()).getPlayer_id());
-                    if(series2.getData().indexOf(d) == series2.getData().size()-1)
-                        config.GlobalVariable.NEED_UPDATE = true;
-//                    config.GlobalVariable.SELECTED_PLAYER.add(((ScatterChartExtraData)d.getExtraValue()).getPlayer());
-                    config.GlobalVariable.SELECTED_PLAYER_ITEM.add(((ScatterChartExtraData)d.getExtraValue()).getPlayerItem());
-                }
-                
+//                        if(found)
+//                            series2.getData().add(d);
+//                        else
+//                            series1.getData().add(d);
+//                    }
+//                }
+//                
+//                for(XYChart.Data<Number,Number> d:data.get(1).getData()){
+//                    double x_count = d.getXValue().doubleValue();
+//                    double y_count = d.getYValue().doubleValue();
+//                    ScatterChartExtraData data = (ScatterChartExtraData)d.getExtraValue();
+//                    if(x_count<config.GlobalVariable.MIN_X || x_count > config.GlobalVariable.MAX_X || y_count<config.GlobalVariable.MIN_Y || y_count>config.GlobalVariable.MAX_Y){
+//                        series1.getData().add(d);
+//                    }else{
+//                        boolean found = false;
+////                        for(Player p:config.GlobalVariable.SELECTED_PLAYER){
+////                            if(p.isEqual(data.getPlayer())){
+////                                found = true;
+////                                break;
+////                            }
+////                        }
+//                        for(PlayerItem p : config.GlobalVariable.SELECTED_PLAYER_ITEM){
+//                            if(p.getPlayer().equals(data.getPlayer())){
+//                                found = true;
+//                                break;
+//                            }
+//                        }
+//                        if(found)
+//                            series2.getData().add(d);
+//                        else
+//                            series1.getData().add(d);
+//                    }
+//                       
+//                }
+//                
+//                // update unselected players to scatter chart
+//                
+//                data.get(0).getData().clear();
+//                for(XYChart.Data<Number,Number> d: series1.getData()){
+//                    XYChart.Data<Number, Number> new_data = new XYChart.Data<Number, Number>(d.getXValue(),d.getYValue());
+//                    new_data.setExtraValue(d.getExtraValue());
+//                    data.get(0).getData().add(new_data);
+//                }
+//                
+//                // update selected players to scatter chart and observable list
+//                data.get(1).getData().clear();
+////                config.GlobalVariable.SELECTED_PLAYER.clear();
+//                config.GlobalVariable.SELECTED_PLAYER_ITEM.clear();
+//                for(XYChart.Data<Number,Number> d: series2.getData()){
+//                    XYChart.Data<Number, Number> new_data = new XYChart.Data<Number, Number>(d.getXValue(),d.getYValue());
+//                    new_data.setExtraValue(d.getExtraValue());
+//                    data.get(1).getData().add(new_data);
+//                    System.out.println(((ScatterChartExtraData)d.getExtraValue()).getName());
+//                    System.out.println(((ScatterChartExtraData)d.getExtraValue()).getTeam_id());
+//                    System.out.println(((ScatterChartExtraData)d.getExtraValue()).getPlayer_id());
+//                    if(series2.getData().indexOf(d) == series2.getData().size()-1)
+//                        config.GlobalVariable.NEED_UPDATE = true;
+////                    config.GlobalVariable.SELECTED_PLAYER.add(((ScatterChartExtraData)d.getExtraValue()).getPlayer());
+//                    config.GlobalVariable.SELECTED_PLAYER_ITEM.add(((ScatterChartExtraData)d.getExtraValue()).getPlayerItem());
+//                }
+//////////////////////////////////////////// end of old version ///////////////////////////////////////////                
+
                 for(PlayerItem p : config.GlobalVariable.SELECTED_PLAYER_ITEM){
                     System.out.println("selectd players: " + p.getPlayer_name());
                 }
@@ -610,7 +678,7 @@ public class ChartZoomManager {
 //			yAxis.setLowerBound( zoomWindow.getMinY() );
 //			yAxis.setUpperBound( zoomWindow.getMaxY() );
 //		}
-                this.printSelectedZone();
+//                this.printSelectedZone();
 //		selecting.set( false );
 	}
 

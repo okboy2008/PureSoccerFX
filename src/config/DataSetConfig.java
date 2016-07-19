@@ -11,6 +11,7 @@ package config;
  */
 public class DataSetConfig {
     // None
+    public static final String AVG_PREFIX = "_";
     public static final String NONE = "- none -";
     
     // Statistics

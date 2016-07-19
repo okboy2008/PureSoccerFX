@@ -37,6 +37,21 @@ public class Player {
         System.out.println(events.size()+ " events.");
     }
     
+    public boolean isPlayerMeetRequirement(double min, double max, String text){
+        double cur = this.getStatisticByName(text);
+        if(cur >= min && cur <= max)
+            return true;
+        return false;
+    }
+    
+    public boolean isPlayerMeetRequirementAVG(double min, double max, String text){
+        double cur = (double)this.getStatisticByName(text)/this.getAppearence();
+        if(cur >= min && cur <= max)
+            return true;
+        return false;
+    }
+    
+    
 //    public ArrayList<ShotEvent> getShotEvents(){
 //        return shotEvents;
 //    }
