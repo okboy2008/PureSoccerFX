@@ -18,6 +18,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,9 +33,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.Chart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
+import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -143,6 +146,8 @@ public class MainGUIFXMLController implements Initializable {
     
     private ChartZoomManager cm21;
     
+    @FXML
+    private StackedBarChart<Number, String> similarityBarChart;
     
 //    private double SCALE_DELTA = 1.1;
     
@@ -175,6 +180,53 @@ public class MainGUIFXMLController implements Initializable {
         this.initPlayerListTable();
         //this.updateAllScatterPlot();
         this.disableStage();
+    }
+    
+    private void updateSimilarityBarChart(){
+//        CategoryAxis yAxis = new CategoryAxis();//(CategoryAxis)this.similarityBarChart.getYAxis();
+//        NumberAxis xAxis = new NumberAxis();//(NumberAxis)this.similarityBarChart.getXAxis();
+        this.similarityBarChart.setCategoryGap(0);
+        ((CategoryAxis)this.similarityBarChart.getYAxis()).getCategories().clear();
+        System.out.println("category clear");
+        this.similarityBarChart.getData().clear();
+        this.similarityBarChart.layout();
+        System.out.println("data clear");
+        XYChart.Series<Number, String> series1 =
+            new XYChart.Series<Number, String>(); // shot
+        XYChart.Series<Number, String> series2 =
+            new XYChart.Series<Number, String>(); // pass
+        XYChart.Series<Number, String> series3 =
+            new XYChart.Series<Number, String>(); // dribbles
+        for(PlayerItem p:config.GlobalVariable.SELECTED_PLAYER_ITEM){
+            // add player similarity bar one by one
+            HashMap<String, Double> tmp = new HashMap<>();
+            double shoot = p.getPlayer().getStatisticByName("Open Play Shot");
+            double pass = p.getPlayer().getStatisticByName("Pass");
+            double dribble = p.getPlayer().getStatisticByName("Dribble");
+            double total = shoot + pass + dribble;
+            shoot = shoot / total * 100.0;
+            pass = pass / total * 100.0;
+            dribble = dribble / total * 100.0;
+            tmp.put("shoot", shoot);
+            tmp.put("pass", pass);
+            tmp.put("dribble", dribble);
+            String cat = p.getTeam_name()+" - "+p.getPlayerName();
+            if((shoot+pass+dribble)==0)
+                continue;
+            
+            ((CategoryAxis)this.similarityBarChart.getYAxis()).getCategories().add(cat);
+//            this.similarityBarChart.getYAxis().
+            // add data
+
+            series1.getData().add(new XYChart.Data(tmp.get("shoot"),cat));
+            series2.getData().add(new XYChart.Data(tmp.get("pass"),cat));
+            series3.getData().add(new XYChart.Data(tmp.get("dribble"),cat));
+                
+            if(config.GlobalVariable.SELECTED_PLAYER_ITEM.indexOf(p)>65)
+                break;
+        }
+        this.similarityBarChart.getData().addAll(series1,series2,series3);
+        System.out.println("finished update similarity chart");
     }
     
     private void initAllChartManager(){
@@ -513,6 +565,8 @@ public class MainGUIFXMLController implements Initializable {
                   if(config.GlobalVariable.NEED_UPDATE){
                      System.out.println("update all scatter charts");
                     updateAllScatterPlot();
+                    System.out.println("update similarity bar charts");
+                    updateSimilarityBarChart();
                     config.GlobalVariable.NEED_UPDATE = false;
                  }
 //                while(c.next()){
@@ -814,6 +868,7 @@ public class MainGUIFXMLController implements Initializable {
             this.searchPlayer();
             this.initAllScatterPlot();
             this.initAllChartManager();
+            this.updateSimilarityBarChart();
         }
     }
 

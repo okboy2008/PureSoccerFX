@@ -255,12 +255,12 @@
             </SplitPane>
          </center>
          <right>
-            <SplitPane fx:id="rightSplitPane" dividerPositions="0.7462462462462462" orientation="VERTICAL" prefHeight="668.0" prefWidth="382.0" BorderPane.alignment="CENTER">
+            <SplitPane fx:id="rightSplitPane" dividerPositions="0.6276276276276276" orientation="VERTICAL" prefHeight="668.0" prefWidth="457.0" BorderPane.alignment="CENTER">
               <items>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="493.0" prefWidth="380.0" />
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                      <children>
-                        <StackedBarChart layoutX="-10.0" layoutY="-137.0" legendVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <StackedBarChart fx:id="similarityBarChart" layoutX="-10.0" layoutY="-137.0" legendVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <xAxis>
                             <NumberAxis side="BOTTOM" />
                           </xAxis>

@@ -17,6 +17,9 @@ import datatype.Team;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.csv.*;
 
 /**
@@ -61,6 +64,10 @@ public class LoadCSVdata {
                         break;
                     } 
                 }
+//                List<Team> collect = teams.stream().parallel()
+//                        .filter(t->t.getName().equals("psv"))
+//                        .collect(Collectors.toList());
+                
                 // new team found
                 if(team_index == -1){
                     Team new_team = new Team(csvRecord.get(config.DataSetConfig.TEAM));
